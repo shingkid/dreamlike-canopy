@@ -197,6 +197,24 @@ exercise_install_and_rollback() {
   printf '%s\n' 'old light theme' > "$existing_home/.config/ghostty/themes/Dreamlike Glade"
   printf '%s\n' 'old starship config' > "$existing_home/.config/starship.toml"
 
+  copy_wrapper="$test_root/fail-staging-copy.sh"
+  cat > "$copy_wrapper" <<'SH'
+#!/bin/sh
+case "$2" in
+  */dreamlike-canopy-stage.*/*) exit 1 ;;
+esac
+exec cp "$@"
+SH
+  chmod +x "$copy_wrapper"
+  if TARGET_HOME="$existing_home" DREAMLIKE_CANOPY_CP="$copy_wrapper" \
+    "$PACKAGE_DIR/scripts/install.sh" >"$test_root/failed-install.out" 2>&1; then
+    fail "install unexpectedly succeeded after staged copy failure"
+  fi
+  [ "$(cat "$existing_home/.config/ghostty/config")" = 'old ghostty config' ] || fail "staged-copy failure changed Ghostty config"
+  [ "$(cat "$existing_home/.config/ghostty/themes/Dreamlike Canopy")" = 'old theme' ] || fail "staged-copy failure changed Canopy theme"
+  [ "$(cat "$existing_home/.config/ghostty/themes/Dreamlike Glade")" = 'old light theme' ] || fail "staged-copy failure changed Glade theme"
+  [ "$(cat "$existing_home/.config/starship.toml")" = 'old starship config' ] || fail "staged-copy failure changed Starship config"
+
   TARGET_HOME="$existing_home" "$PACKAGE_DIR/scripts/install.sh" >/dev/null
   assert_same "$GHOSTTY_CONFIG_FILE" "$existing_home/.config/ghostty/config"
   assert_same "$GHOSTTY_THEME_FILE" "$existing_home/.config/ghostty/themes/Dreamlike Canopy"
