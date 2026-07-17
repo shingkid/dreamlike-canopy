@@ -6,6 +6,7 @@ TARGET_HOME=${TARGET_HOME:-"$HOME"}
 CONFIG_DIR="$TARGET_HOME/.config"
 GHOSTTY_DIR="$CONFIG_DIR/ghostty"
 STARSHIP_FILE="$CONFIG_DIR/starship.toml"
+COMPACT_STARSHIP_FILE="$CONFIG_DIR/dreamlike-canopy/starship-compact.toml"
 BACKUP_ROOT="$CONFIG_DIR/dreamlike-canopy-backups"
 
 if [ ! -d "$BACKUP_ROOT" ]; then
@@ -34,6 +35,7 @@ restore_file ghostty-config "$GHOSTTY_DIR/config"
 restore_file dreamlike-canopy-theme "$GHOSTTY_DIR/themes/Dreamlike Canopy"
 restore_file dreamlike-glade-theme "$GHOSTTY_DIR/themes/Dreamlike Glade"
 restore_file starship.toml "$STARSHIP_FILE"
+restore_file starship-compact.toml "$COMPACT_STARSHIP_FILE"
 
 printf '%s\n' "Restored backup: $BACKUP_DIR"
 printf '%s\n' "Restart Ghostty, then start a new shell."

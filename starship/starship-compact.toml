@@ -1,6 +1,6 @@
-# Dreamlike Canopy for Starship — Design A
-# A polished Powerline capsule for the directory, airy contextual modules,
-# and a luminous mint prompt character on a clean second line.
+# Dreamlike Canopy for Starship — Compact
+# Preserve the adaptive palette and full path while removing runtime/package
+# modules for narrow panes and focused terminal work.
 
 "$schema" = "https://starship.rs/config-schema.json"
 
@@ -9,13 +9,10 @@ add_newline = true
 scan_timeout = 30
 command_timeout = 1_000
 
-format = """
-$directory$git_branch$git_status$nodejs$python$rust$golang$package$cmd_duration$line_break$character"""
+format = "$directory$git_branch$git_status$cmd_duration$line_break$character"
 right_format = "$time"
 
 [palettes.dreamlike_canopy]
-# Use terminal ANSI colors so Starship follows Ghostty's active light/dark
-# theme without a separate shell configuration.
 mist = "white"
 capsule = "bright-black"
 capsule_text = "bright-white"
@@ -29,7 +26,6 @@ coral = "bright-red"
 [directory]
 truncation_length = 0
 truncate_to_repo = false
-truncation_symbol = "…/"
 read_only = " "
 format = "[](fg:capsule)[ $path$read_only ]($style)[](fg:capsule)  "
 style = "fg:capsule_text bg:capsule"
@@ -40,8 +36,6 @@ format = "[$branch]($style)"
 style = "fg:violet"
 
 [git_status]
-# Risk is semantic: coral for destructive states, sunlight for attention,
-# canopy green for positive progress, and mist for neutral inventory.
 format = "[$conflicted](fg:coral)[$deleted](fg:coral)[$modified](fg:sunlight)[$renamed](fg:sunlight)[$diverged](fg:sunlight)[$behind](fg:sunlight)[$ahead](fg:canopy)[$staged](fg:canopy)[$untracked](fg:mist)[$stashed](fg:mist)"
 conflicted = "~"
 ahead = "⇡${count}"
@@ -56,28 +50,8 @@ deleted = "✘${count}"
 
 [cmd_duration]
 min_time = 2_000
-format = "[  took $duration]($style)"
+format = "  [took $duration]($style)"
 style = "fg:sunlight"
-
-[nodejs]
-format = "[  node $version]($style)"
-style = "fg:lagoon"
-
-[python]
-format = "[  py $version( ($virtualenv))]($style)"
-style = "fg:lagoon"
-
-[rust]
-format = "[  rs $version]($style)"
-style = "fg:lagoon"
-
-[golang]
-format = "[  go $version]($style)"
-style = "fg:lagoon"
-
-[package]
-format = "[  pkg $version]($style)"
-style = "fg:mist"
 
 [time]
 disabled = false

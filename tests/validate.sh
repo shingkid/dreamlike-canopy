@@ -3,6 +3,7 @@ set -eu
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 STARSHIP_CONFIG_FILE="$PACKAGE_DIR/starship/starship.toml"
+STARSHIP_COMPACT_CONFIG_FILE="$PACKAGE_DIR/starship/starship-compact.toml"
 GHOSTTY_CONFIG_FILE="$PACKAGE_DIR/ghostty/config"
 GHOSTTY_THEME_FILE="$PACKAGE_DIR/ghostty/themes/Dreamlike Canopy"
 GHOSTTY_LIGHT_THEME_FILE="$PACKAGE_DIR/ghostty/themes/Dreamlike Glade"
@@ -35,8 +36,9 @@ assert_same() {
 validate_starship() {
   command -v starship >/dev/null 2>&1 || fail "starship is required for validation"
   STARSHIP_CONFIG="$STARSHIP_CONFIG_FILE" starship print-config >/dev/null
+  STARSHIP_CONFIG="$STARSHIP_COMPACT_CONFIG_FILE" starship print-config >/dev/null
 
-  assert_contains "$STARSHIP_CONFIG_FILE" 'format = "[](fg:capsule)' 
+  assert_contains "$STARSHIP_CONFIG_FILE" 'format = "[](fg:capsule)'
   assert_contains "$STARSHIP_CONFIG_FILE" '[](fg:capsule)  "'
   assert_contains "$STARSHIP_CONFIG_FILE" 'truncation_length = 0'
   assert_contains "$STARSHIP_CONFIG_FILE" 'truncate_to_repo = false'
@@ -44,6 +46,11 @@ validate_starship() {
   assert_contains "$STARSHIP_CONFIG_FILE" 'success_symbol = "[❯](fg:mint)"'
   assert_contains "$STARSHIP_CONFIG_FILE" 'capsule = "bright-black"'
   assert_contains "$STARSHIP_CONFIG_FILE" 'capsule_text = "bright-white"'
+  assert_contains "$STARSHIP_CONFIG_FILE" '[$conflicted](fg:coral)'
+  assert_contains "$STARSHIP_CONFIG_FILE" '[$deleted](fg:coral)'
+  assert_contains "$STARSHIP_CONFIG_FILE" '[$modified](fg:sunlight)'
+  assert_contains "$STARSHIP_CONFIG_FILE" '[$staged](fg:canopy)'
+  assert_contains "$STARSHIP_COMPACT_CONFIG_FILE" 'format = "$directory$git_branch$git_status$cmd_duration$line_break$character"'
 
   rendered=$(STARSHIP_CONFIG="$STARSHIP_CONFIG_FILE" starship module directory \
     --path "$PACKAGE_DIR/starship" \
@@ -73,6 +80,7 @@ validate_ghostty_static() {
   assert_not_contains "$GHOSTTY_CONFIG_FILE" 'background-opacity ='
   assert_contains "$GHOSTTY_CONFIG_FILE" 'theme = light:Dreamlike Glade,dark:Dreamlike Canopy'
   assert_contains "$GHOSTTY_THEME_FILE" 'background-opacity = 0.86'
+  assert_contains "$GHOSTTY_THEME_FILE" 'minimum-contrast = 4.5'
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'background-opacity = 0.78'
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'minimum-contrast = 4.5'
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'background = #E7F0E8'
@@ -87,6 +95,8 @@ validate_ghostty_static() {
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 12=#345F97'
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 13=#73549D'
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 14=#1F686C'
+  assert_contains "$PACKAGE_DIR/README.md" '## Git status symbols'
+  assert_contains "$PACKAGE_DIR/README.md" '## Troubleshooting missing glyphs'
 
   while IFS='=' read -r raw_key raw_value; do
     key=$(printf '%s' "$raw_key" | tr -d '[:space:]')
@@ -147,23 +157,26 @@ exercise_install_and_rollback() {
   trap 'rm -rf "$test_root"' EXIT HUP INT TERM
 
   existing_home="$test_root/existing-home"
-  mkdir -p "$existing_home/.config/ghostty/themes"
+  mkdir -p "$existing_home/.config/ghostty/themes" "$existing_home/.config/dreamlike-canopy"
   printf '%s\n' 'old ghostty config' > "$existing_home/.config/ghostty/config"
   printf '%s\n' 'old theme' > "$existing_home/.config/ghostty/themes/Dreamlike Canopy"
   printf '%s\n' 'old light theme' > "$existing_home/.config/ghostty/themes/Dreamlike Glade"
   printf '%s\n' 'old starship config' > "$existing_home/.config/starship.toml"
+  printf '%s\n' 'old compact Starship config' > "$existing_home/.config/dreamlike-canopy/starship-compact.toml"
 
   TARGET_HOME="$existing_home" "$PACKAGE_DIR/scripts/install.sh" >/dev/null
   assert_same "$GHOSTTY_CONFIG_FILE" "$existing_home/.config/ghostty/config"
   assert_same "$GHOSTTY_THEME_FILE" "$existing_home/.config/ghostty/themes/Dreamlike Canopy"
   assert_same "$GHOSTTY_LIGHT_THEME_FILE" "$existing_home/.config/ghostty/themes/Dreamlike Glade"
   assert_same "$STARSHIP_CONFIG_FILE" "$existing_home/.config/starship.toml"
+  assert_same "$PACKAGE_DIR/starship/starship-compact.toml" "$existing_home/.config/dreamlike-canopy/starship-compact.toml"
 
   TARGET_HOME="$existing_home" "$PACKAGE_DIR/scripts/rollback.sh" >/dev/null
   [ "$(cat "$existing_home/.config/ghostty/config")" = 'old ghostty config' ] || fail "Ghostty config was not restored"
   [ "$(cat "$existing_home/.config/ghostty/themes/Dreamlike Canopy")" = 'old theme' ] || fail "Ghostty theme was not restored"
   [ "$(cat "$existing_home/.config/ghostty/themes/Dreamlike Glade")" = 'old light theme' ] || fail "Ghostty light theme was not restored"
   [ "$(cat "$existing_home/.config/starship.toml")" = 'old starship config' ] || fail "Starship config was not restored"
+  [ "$(cat "$existing_home/.config/dreamlike-canopy/starship-compact.toml")" = 'old compact Starship config' ] || fail "compact Starship config was not restored"
 
   empty_home="$test_root/empty-home"
   mkdir -p "$empty_home"
@@ -173,6 +186,7 @@ exercise_install_and_rollback() {
   [ ! -e "$empty_home/.config/ghostty/themes/Dreamlike Canopy" ] || fail "rollback did not remove newly installed theme"
   [ ! -e "$empty_home/.config/ghostty/themes/Dreamlike Glade" ] || fail "rollback did not remove newly installed light theme"
   [ ! -e "$empty_home/.config/starship.toml" ] || fail "rollback did not remove newly installed Starship config"
+  [ ! -e "$empty_home/.config/dreamlike-canopy/starship-compact.toml" ] || fail "rollback did not remove newly installed compact Starship config"
 
   rm -rf "$test_root"
   trap - EXIT HUP INT TERM

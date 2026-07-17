@@ -88,8 +88,50 @@ Before installing, run the included validation suite:
 
 It loads the Starship TOML with `starship print-config`, renders the directory
 module to verify both rounded caps, checks both Ghostty themes and all 16 ANSI
-entries, verifies the per-theme opacity and Glade contrast settings, checks
-both scripts with `sh -n`, and exercises installation plus
-rollback in temporary homes. If the `ghostty` CLI is available, the suite also
-runs Ghostty's `+validate-config` parser on the main configuration and both
-theme files.
+entries, verifies the per-theme opacity and contrast settings, checks both
+scripts with `sh -n`, and exercises installation plus rollback in temporary
+homes. If the `ghostty` CLI is available, the suite also runs Ghostty's
+`+validate-config` parser on the main configuration and both theme files.
+
+## Compact prompt for split panes
+
+The installer also places `starship-compact.toml` at
+`~/.config/dreamlike-canopy/starship-compact.toml`. It keeps the full-path
+capsule, Git context, duration, clock, and prompt state, while omitting runtime
+and package modules that consume horizontal space.
+
+Start a compact shell with:
+
+```sh
+STARSHIP_CONFIG="$HOME/.config/dreamlike-canopy/starship-compact.toml" zsh
+```
+
+To make it permanent for a dedicated shell profile, export that
+`STARSHIP_CONFIG` value before running `starship init zsh`.
+
+## Git status symbols
+
+The prompt uses both symbols and color so status remains understandable without
+color perception. Coral marks destructive states, sunlight marks attention,
+and green marks positive progress.
+
+| Symbol | Meaning | Color role |
+| --- | --- | --- |
+| `~` | conflicted | coral |
+| `✘` | deleted | coral |
+| `!` | modified | sunlight |
+| `»` | renamed | sunlight |
+| `⇕` | diverged | sunlight |
+| `⇣` | behind | sunlight |
+| `⇡` | ahead | canopy green |
+| `+` | staged | canopy green |
+| `?` | untracked | mist |
+| `≡` | stashed | mist |
+
+## Troubleshooting missing glyphs
+
+The directory capsule (`` and ``) and read-only lock (``) require
+**GeistMono Nerd Font**. Install that font, then fully restart Ghostty. If the
+glyphs still render as empty boxes, confirm the font is installed in Font Book
+and that `ghostty/config` lists `GeistMono Nerd Font` before the Geist Mono
+fallback.
