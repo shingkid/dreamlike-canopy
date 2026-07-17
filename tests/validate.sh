@@ -68,6 +68,36 @@ validate_starship() {
   case "$rendered" in
     *"…/"*) fail "rendered directory module still truncates the path" ;;
   esac
+
+  divergence_root=$(mktemp -d "${TMPDIR:-/tmp}/dreamlike-canopy-divergence.XXXXXX")
+  remote="$divergence_root/remote.git"
+  local_repo="$divergence_root/local"
+  peer_repo="$divergence_root/peer"
+  git init --bare -q "$remote"
+  git init -q -b main "$local_repo"
+  git -C "$local_repo" config user.email test@example.com
+  git -C "$local_repo" config user.name test
+  printf '%s\n' base > "$local_repo/status.txt"
+  git -C "$local_repo" add status.txt
+  git -C "$local_repo" commit -qm base
+  git -C "$local_repo" remote add origin "$remote"
+  git -C "$local_repo" push -qu origin main
+  git -C "$local_repo" branch --set-upstream-to=origin/main main >/dev/null
+  git clone -q "$remote" "$peer_repo"
+  git -C "$peer_repo" config user.email test@example.com
+  git -C "$peer_repo" config user.name test
+  printf '%s\n' remote >> "$peer_repo/status.txt"
+  git -C "$peer_repo" commit -am remote -q
+  git -C "$peer_repo" push -q
+  printf '%s\n' local >> "$local_repo/status.txt"
+  git -C "$local_repo" commit -am local -q
+  git -C "$local_repo" fetch -q origin
+  divergence_rendered=$(STARSHIP_CONFIG="$STARSHIP_CONFIG_FILE" starship module git_status --path "$local_repo")
+  rm -rf "$divergence_root"
+  case "$divergence_rendered" in
+    *"⇕⇡1⇣1"*) ;;
+    *) fail "rendered diverged Git status is missing ⇕⇡1⇣1" ;;
+  esac
 }
 
 validate_ghostty_static() {

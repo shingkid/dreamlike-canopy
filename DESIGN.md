@@ -112,8 +112,8 @@ but never the meaning of an ANSI role. Keep branch, runtime, duration, success,
 and error assignments stable across both themes.
 
 **The Risk Signal Rule.** Coral is reserved for conflict and deletion; sunlight
-marks attention states such as modification, divergence, and being behind;
-canopy green marks positive progress such as staging or being ahead. Symbols
+marks attention states such as modification, divergence, and remote
+synchronization; canopy green marks staged progress. Symbols
 remain visible so risk is never communicated by color alone.
 
 ## Typography
@@ -171,7 +171,7 @@ layers or decorative glass containers.
 
 ### Status Modules
 
-- **Git:** Violet branch name; coral for conflicted/deleted, sunlight for modified/renamed/diverged/behind, canopy green for staged/ahead, and mist for untracked/stashed. Each state also has an explicit symbol.
+- **Git:** Violet branch name; coral for conflicted/deleted, sunlight for modified/renamed/diverged/ahead/behind, canopy green for staged, and mist for untracked/stashed. Each state also has an explicit symbol.
 - **Runtimes:** Lagoon/cyan for Node, Python, Rust, and Go versions in the full prompt.
 - **Time and duration:** Mist for the clock; sunlight/yellow for commands taking at least two seconds.
 - **Prompt state:** Mint success, coral error, and canopy Vim-command state.

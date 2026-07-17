@@ -40,9 +40,9 @@ format = "[$branch]($style)"
 style = "fg:violet"
 
 [git_status]
-# Risk is semantic: coral for destructive states, sunlight for attention,
-# canopy green for positive progress, and mist for neutral inventory.
-format = "[$conflicted](fg:coral)[$deleted](fg:coral)[$modified](fg:sunlight)[$renamed](fg:sunlight)[$diverged](fg:sunlight)[$behind](fg:sunlight)[$ahead](fg:canopy)[$staged](fg:canopy)[$untracked](fg:mist)[$stashed](fg:mist)"
+# Risk is semantic: coral for destructive states, sunlight for remote
+# synchronization, canopy green for staged progress, and mist for neutral inventory.
+format = "[$conflicted](fg:coral)[$deleted](fg:coral)[$modified](fg:sunlight)[$renamed](fg:sunlight)[$ahead_behind](fg:sunlight)[$staged](fg:canopy)[$untracked](fg:mist)[$stashed](fg:mist)"
 conflicted = "~"
 ahead = "⇡${count}"
 behind = "⇣${count}"

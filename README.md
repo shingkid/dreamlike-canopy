@@ -97,7 +97,7 @@ homes. If the `ghostty` CLI is available, the suite also runs Ghostty's
 
 The prompt uses both symbols and color so status remains understandable without
 color perception. Coral marks destructive states, sunlight marks attention,
-and green marks positive progress.
+and green marks staged progress. Remote synchronization is shown in sunlight.
 
 | Symbol | Meaning | Color role |
 | --- | --- | --- |
@@ -107,7 +107,7 @@ and green marks positive progress.
 | `»` | renamed | sunlight |
 | `⇕` | diverged | sunlight |
 | `⇣` | behind | sunlight |
-| `⇡` | ahead | canopy green |
+| `⇡` | ahead | sunlight |
 | `+` | staged | canopy green |
 | `?` | untracked | mist |
 | `≡` | stashed | mist |
