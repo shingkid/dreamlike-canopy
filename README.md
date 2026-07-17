@@ -88,6 +88,19 @@ echo 'export STARSHIP_CONFIG="$HOME/.config/starship-plain.toml"' >> ~/.zshrc
 Open a new shell after this opt-in choice. This profile does not affect
 Ghostty's automatic light/dark switching.
 
+### Transient completed prompts (Zsh)
+
+To replace each completed full prompt with the mint success or coral error
+prompt character, source the included hook **after** Starship initialization:
+
+```sh
+eval "$(starship init zsh)"
+source /path/to/dreamlike-canopy/starship/transient-zsh.zsh
+```
+
+The active prompt remains full; only completed prompts collapse to the colored
+character.
+
 ## Switch light and dark mode
 
 Ghostty uses this theme pair:

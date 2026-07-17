@@ -4,6 +4,7 @@ set -eu
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 STARSHIP_CONFIG_FILE="$PACKAGE_DIR/starship/starship.toml"
 STARSHIP_PLAIN_CONFIG_FILE="$PACKAGE_DIR/starship/starship-plain.toml"
+TRANSIENT_ZSH_FILE="$PACKAGE_DIR/starship/transient-zsh.zsh"
 README_FILE="$PACKAGE_DIR/README.md"
 GHOSTTY_CONFIG_FILE="$PACKAGE_DIR/ghostty/config"
 GHOSTTY_THEME_FILE="$PACKAGE_DIR/ghostty/themes/Dreamlike Canopy"
@@ -178,6 +179,10 @@ validate_ghostty_static() {
   assert_contains "$README_FILE" 'starship-plain.toml'
   assert_contains "$README_FILE" 'tofu'
   assert_contains "$README_FILE" 'stages all four files before replacing any destination'
+  assert_contains "$README_FILE" 'transient-zsh.zsh'
+  assert_contains "$TRANSIENT_ZSH_FILE" 'starship_transient_prompt_func()'
+  assert_contains "$TRANSIENT_ZSH_FILE" 'starship module character'
+  assert_contains "$TRANSIENT_ZSH_FILE" 'enable_transience'
   ghostty_bin=''
   if command -v ghostty >/dev/null 2>&1; then
     ghostty_bin=$(command -v ghostty)
