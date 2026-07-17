@@ -1,0 +1,29 @@
+# Dreamlike Glade — a light, open companion to Dreamlike Canopy.
+background-opacity = 0.78
+minimum-contrast = 4.5
+background = #E7F0E8
+foreground = #1F4249
+cursor-color = #2D8D6C
+cursor-text = #E7F0E8
+selection-background = #D8D0E2
+selection-foreground = #1F4249
+
+# Normal ANSI colors
+palette = 0=#244B4B
+palette = 1=#8E3D50
+palette = 2=#2F7550
+palette = 3=#86601F
+palette = 4=#365F91
+palette = 5=#624781
+palette = 6=#216D72
+palette = 7=#506864
+
+# Bright ANSI colors
+palette = 8=#D5CDE3
+palette = 9=#9C4357
+palette = 10=#1F6B4E
+palette = 11=#805815
+palette = 12=#345F97
+palette = 13=#73549D
+palette = 14=#1F686C
+palette = 15=#1F4249

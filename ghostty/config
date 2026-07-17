@@ -1,0 +1,17 @@
+# Dreamlike Canopy for Ghostty
+# Copy this file to ~/.config/ghostty/config and the theme alongside it.
+
+theme = light:Dreamlike Glade,dark:Dreamlike Canopy
+font-family = GeistMono Nerd Font
+font-family = Geist Mono
+font-size = 14
+
+# Frosted Liquid Glass blur. Each theme sets its own opacity; changes require
+# a complete Ghostty restart on macOS.
+background-blur = 20
+
+window-padding-x = 18
+window-padding-y = 14
+cursor-style = bar
+cursor-style-blink = false
+shell-integration = detect

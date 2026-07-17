@@ -1,0 +1,28 @@
+# Dreamlike Canopy — a dark, frosted blue-green terminal palette.
+background-opacity = 0.86
+background = #07110F
+foreground = #D9E6E3
+cursor-color = #8FFFD2
+cursor-text = #07110F
+selection-background = #1D4C47
+selection-foreground = #EAF5F2
+
+# Normal ANSI colors
+palette = 0=#0B1715
+palette = 1=#C96F78
+palette = 2=#7FE3B2
+palette = 3=#E8D79A
+palette = 4=#6794D8
+palette = 5=#9B86D3
+palette = 6=#52D9D0
+palette = 7=#718A88
+
+# Bright ANSI colors
+palette = 8=#24514D
+palette = 9=#F08A8A
+palette = 10=#8FFFD2
+palette = 11=#E8D79A
+palette = 12=#72A7FF
+palette = 13=#B49CFF
+palette = 14=#52D9D0
+palette = 15=#ECF8F5
