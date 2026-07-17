@@ -18,13 +18,13 @@ colors:
   lagoon: "#52D9D0"
   muted-teal: "#718A88"
   deep-teal: "#24514D"
-  glade-rose: "#8E3D50"
-  glade-green: "#2F7550"
-  glade-sunlight: "#86601F"
-  glade-blue: "#365F91"
-  glade-violet: "#624781"
-  glade-lagoon: "#216D72"
-  glade-muted-teal: "#506864"
+  glade-rose: "#8D2944"
+  glade-green: "#1E6543"
+  glade-sunlight: "#795100"
+  glade-blue: "#205A9D"
+  glade-violet: "#623C88"
+  glade-lagoon: "#006B73"
+  glade-muted-teal: "#4A6663"
 typography:
   body:
     fontFamily: "GeistMono Nerd Font, Geist Mono, monospace"
@@ -102,7 +102,7 @@ duration, and rose signals errors without overwhelming the surface.
 - **Glade Ink** (#1F4249): Light-mode foreground and strongest text.
 - **Deep Teal** (#24514D): Directory capsule and dark selection family.
 - **Lavender Selection** (#D8D0E2): Light-mode selection surface.
-- **Muted Teal** (#718A88 / #506864): Secondary ANSI text and low-emphasis context.
+- **Muted Teal** (#718A88 / #4A6663): Secondary ANSI text and low-emphasis context.
 
 ### Named Rules
 

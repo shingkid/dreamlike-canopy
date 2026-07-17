@@ -9,22 +9,22 @@ selection-background = #D8D0E2
 selection-foreground = #1F4249
 
 # Normal ANSI colors
-palette = 0=#244B4B
-palette = 1=#963247
-palette = 2=#2D6842
-palette = 3=#77530E
-palette = 4=#285C9E
-palette = 5=#6B428B
-palette = 6=#126D73
-palette = 7=#496D67
+palette = 0=#1F4145
+palette = 1=#8D2944
+palette = 2=#1E6543
+palette = 3=#795100
+palette = 4=#205A9D
+palette = 5=#623C88
+palette = 6=#006B73
+palette = 7=#4A6663
 
 # Bright ANSI colors
 # Bright black remains the Starship directory-capsule surface.
 palette = 8=#D5CDE3
-palette = 9=#A93A52
-palette = 10=#08784A
-palette = 11=#8B5D0E
-palette = 12=#1F68B5
-palette = 13=#7A4FA6
-palette = 14=#0F7478
+palette = 9=#B92F50
+palette = 10=#00794B
+palette = 11=#956100
+palette = 12=#166BC0
+palette = 13=#7A4DAA
+palette = 14=#00757C
 palette = 15=#173C43
