@@ -33,6 +33,17 @@ Ghostty's blur.
 - GeistMono Nerd Font installed for the rounded Powerline glyphs
 - Geist Mono is configured as the fallback font
 
+### Verify the font
+
+Check that the glyph-capable face is installed before using the default prompt:
+
+```sh
+fc-list | grep -i "GeistMono Nerd Font"
+```
+
+If this prints nothing, Powerline caps or the lock can appear as empty boxes (tofu).
+Install GeistMono Nerd Font, or use the plain-glyph profile below.
+
 For zsh, initialize Starship with this line in `~/.zshrc` if it is not there
 already:
 
@@ -56,8 +67,26 @@ versions in `~/.config/dreamlike-canopy-backups/<timestamp>/`:
 - `~/.config/ghostty/themes/Dreamlike Glade`
 - `~/.config/starship.toml`
 
+The installer stages all four files before replacing any destination. If a commit
+fails, it restores the timestamped backup; if recovery cannot complete, run the
+printed `TARGET_HOME=... ./scripts/rollback.sh` command.
+
 Restart Ghostty completely (not merely a new terminal window), then open a
 new shell. On macOS, Ghostty applies opacity changes only after a full restart.
+
+## Optional prompt profiles
+
+### No Nerd Font
+
+Use `starship/starship-plain.toml` to avoid Powerline and lock glyphs:
+
+```sh
+cp /path/to/dreamlike-canopy/starship/starship-plain.toml ~/.config/starship-plain.toml
+echo 'export STARSHIP_CONFIG="$HOME/.config/starship-plain.toml"' >> ~/.zshrc
+```
+
+Open a new shell after this opt-in choice. This profile does not affect
+Ghostty's automatic light/dark switching.
 
 ## Switch light and dark mode
 

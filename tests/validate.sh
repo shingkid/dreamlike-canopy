@@ -4,6 +4,7 @@ set -eu
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 STARSHIP_CONFIG_FILE="$PACKAGE_DIR/starship/starship.toml"
 STARSHIP_PLAIN_CONFIG_FILE="$PACKAGE_DIR/starship/starship-plain.toml"
+README_FILE="$PACKAGE_DIR/README.md"
 GHOSTTY_CONFIG_FILE="$PACKAGE_DIR/ghostty/config"
 GHOSTTY_THEME_FILE="$PACKAGE_DIR/ghostty/themes/Dreamlike Canopy"
 GHOSTTY_LIGHT_THEME_FILE="$PACKAGE_DIR/ghostty/themes/Dreamlike Glade"
@@ -172,6 +173,11 @@ validate_ghostty_static() {
   validate_theme_file "$GHOSTTY_THEME_FILE"
   validate_theme_file "$GHOSTTY_LIGHT_THEME_FILE"
 
+  assert_contains "$README_FILE" 'fc-list | grep -i "GeistMono Nerd Font"'
+  assert_not_contains "$README_FILE" 'starship-compact.toml'
+  assert_contains "$README_FILE" 'starship-plain.toml'
+  assert_contains "$README_FILE" 'tofu'
+  assert_contains "$README_FILE" 'stages all four files before replacing any destination'
   ghostty_bin=''
   if command -v ghostty >/dev/null 2>&1; then
     ghostty_bin=$(command -v ghostty)
