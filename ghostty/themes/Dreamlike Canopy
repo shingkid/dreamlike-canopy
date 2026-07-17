@@ -1,5 +1,6 @@
 # Dreamlike Canopy — a dark, frosted blue-green terminal palette.
 background-opacity = 0.86
+minimum-contrast = 4.5
 background = #07110F
 foreground = #D9E6E3
 cursor-color = #8FFFD2

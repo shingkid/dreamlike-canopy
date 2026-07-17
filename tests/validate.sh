@@ -36,7 +36,7 @@ validate_starship() {
   command -v starship >/dev/null 2>&1 || fail "starship is required for validation"
   STARSHIP_CONFIG="$STARSHIP_CONFIG_FILE" starship print-config >/dev/null
 
-  assert_contains "$STARSHIP_CONFIG_FILE" 'format = "[](fg:capsule)' 
+  assert_contains "$STARSHIP_CONFIG_FILE" 'format = "[](fg:capsule)'
   assert_contains "$STARSHIP_CONFIG_FILE" '[](fg:capsule)  "'
   assert_contains "$STARSHIP_CONFIG_FILE" 'truncation_length = 0'
   assert_contains "$STARSHIP_CONFIG_FILE" 'truncate_to_repo = false'
@@ -44,6 +44,10 @@ validate_starship() {
   assert_contains "$STARSHIP_CONFIG_FILE" 'success_symbol = "[❯](fg:mint)"'
   assert_contains "$STARSHIP_CONFIG_FILE" 'capsule = "bright-black"'
   assert_contains "$STARSHIP_CONFIG_FILE" 'capsule_text = "bright-white"'
+  assert_contains "$STARSHIP_CONFIG_FILE" '[$conflicted](fg:coral)'
+  assert_contains "$STARSHIP_CONFIG_FILE" '[$deleted](fg:coral)'
+  assert_contains "$STARSHIP_CONFIG_FILE" '[$modified](fg:sunlight)'
+  assert_contains "$STARSHIP_CONFIG_FILE" '[$staged](fg:canopy)'
 
   rendered=$(STARSHIP_CONFIG="$STARSHIP_CONFIG_FILE" starship module directory \
     --path "$PACKAGE_DIR/starship" \
@@ -64,6 +68,36 @@ validate_starship() {
   case "$rendered" in
     *"…/"*) fail "rendered directory module still truncates the path" ;;
   esac
+
+  divergence_root=$(mktemp -d "${TMPDIR:-/tmp}/dreamlike-canopy-divergence.XXXXXX")
+  remote="$divergence_root/remote.git"
+  local_repo="$divergence_root/local"
+  peer_repo="$divergence_root/peer"
+  git init --bare -q "$remote"
+  git init -q -b main "$local_repo"
+  git -C "$local_repo" config user.email test@example.com
+  git -C "$local_repo" config user.name test
+  printf '%s\n' base > "$local_repo/status.txt"
+  git -C "$local_repo" add status.txt
+  git -C "$local_repo" commit -qm base
+  git -C "$local_repo" remote add origin "$remote"
+  git -C "$local_repo" push -qu origin main
+  git -C "$local_repo" branch --set-upstream-to=origin/main main >/dev/null
+  git clone -q "$remote" "$peer_repo"
+  git -C "$peer_repo" config user.email test@example.com
+  git -C "$peer_repo" config user.name test
+  printf '%s\n' remote >> "$peer_repo/status.txt"
+  git -C "$peer_repo" commit -am remote -q
+  git -C "$peer_repo" push -q
+  printf '%s\n' local >> "$local_repo/status.txt"
+  git -C "$local_repo" commit -am local -q
+  git -C "$local_repo" fetch -q origin
+  divergence_rendered=$(STARSHIP_CONFIG="$STARSHIP_CONFIG_FILE" starship module git_status --path "$local_repo")
+  rm -rf "$divergence_root"
+  case "$divergence_rendered" in
+    *"⇕⇡1⇣1"*) ;;
+    *) fail "rendered diverged Git status is missing ⇕⇡1⇣1" ;;
+  esac
 }
 
 validate_ghostty_static() {
@@ -73,6 +107,7 @@ validate_ghostty_static() {
   assert_not_contains "$GHOSTTY_CONFIG_FILE" 'background-opacity ='
   assert_contains "$GHOSTTY_CONFIG_FILE" 'theme = light:Dreamlike Glade,dark:Dreamlike Canopy'
   assert_contains "$GHOSTTY_THEME_FILE" 'background-opacity = 0.86'
+  assert_contains "$GHOSTTY_THEME_FILE" 'minimum-contrast = 4.5'
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'background-opacity = 0.78'
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'minimum-contrast = 4.5'
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'background = #E7F0E8'
@@ -87,6 +122,8 @@ validate_ghostty_static() {
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 12=#345F97'
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 13=#73549D'
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 14=#1F686C'
+  assert_contains "$PACKAGE_DIR/README.md" '## Git status symbols'
+  assert_contains "$PACKAGE_DIR/README.md" '## Troubleshooting missing glyphs'
 
   while IFS='=' read -r raw_key raw_value; do
     key=$(printf '%s' "$raw_key" | tr -d '[:space:]')
