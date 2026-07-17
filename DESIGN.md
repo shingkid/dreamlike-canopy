@@ -70,7 +70,7 @@ generic neon hacker theme, a glossy SaaS dashboard, or decorative glass UI.
 - Deep forest teal in dark mode; open green-tinted neutral in light mode.
 - Shared ANSI semantics across automatic light/dark switching.
 - Geist Mono typography at a stable 14px reading size.
-- Full paths, semantic Git feedback, and an optional compact prompt preset for split panes.
+- Full paths, semantic Git feedback, and a rounded Powerline directory capsule.
 
 ## Colors
 
@@ -173,7 +173,6 @@ layers or decorative glass containers.
 
 - **Git:** Violet branch name; coral for conflicted/deleted, sunlight for modified/renamed/diverged/behind, canopy green for staged/ahead, and mist for untracked/stashed. Each state also has an explicit symbol.
 - **Runtimes:** Lagoon/cyan for Node, Python, Rust, and Go versions in the full prompt.
-- **Compact preset:** Preserves the directory capsule, Git, duration, clock, and prompt state while omitting runtime and package modules for split panes.
 - **Time and duration:** Mist for the clock; sunlight/yellow for commands taking at least two seconds.
 - **Prompt state:** Mint success, coral error, and canopy Vim-command state.
 

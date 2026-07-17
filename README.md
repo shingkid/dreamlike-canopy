@@ -93,22 +93,6 @@ scripts with `sh -n`, and exercises installation plus rollback in temporary
 homes. If the `ghostty` CLI is available, the suite also runs Ghostty's
 `+validate-config` parser on the main configuration and both theme files.
 
-## Compact prompt for split panes
-
-The installer also places `starship-compact.toml` at
-`~/.config/dreamlike-canopy/starship-compact.toml`. It keeps the full-path
-capsule, Git context, duration, clock, and prompt state, while omitting runtime
-and package modules that consume horizontal space.
-
-Start a compact shell with:
-
-```sh
-STARSHIP_CONFIG="$HOME/.config/dreamlike-canopy/starship-compact.toml" zsh
-```
-
-To make it permanent for a dedicated shell profile, export that
-`STARSHIP_CONFIG` value before running `starship init zsh`.
-
 ## Git status symbols
 
 The prompt uses both symbols and color so status remains understandable without
