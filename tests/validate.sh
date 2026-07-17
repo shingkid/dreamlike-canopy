@@ -79,14 +79,47 @@ validate_ghostty_static() {
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'foreground = #1F4249'
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'cursor-color = #2D8D6C'
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'selection-background = #D8D0E2'
-  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 5=#624781'
-  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 7=#506864'
+  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 0=#244B4B'
+  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 1=#963247'
+  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 2=#2D6842'
+  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 3=#77530E'
+  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 4=#285C9E'
+  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 5=#6B428B'
+  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 6=#126D73'
+  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 7=#496D67'
   assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 8=#D5CDE3'
-  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 10=#1F6B4E'
-  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 11=#805815'
-  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 12=#345F97'
-  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 13=#73549D'
-  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 14=#1F686C'
+  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 9=#A93A52'
+  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 10=#08784A'
+  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 11=#8B5D0E'
+  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 12=#1F68B5'
+  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 13=#7A4FA6'
+  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 14=#0F7478'
+  assert_contains "$GHOSTTY_LIGHT_THEME_FILE" 'palette = 15=#173C43'
+
+  python3 - "$GHOSTTY_LIGHT_THEME_FILE" <<'PY'
+import re
+import sys
+
+background = "E7F0E8"
+text_indices = set(range(1, 8)) | set(range(9, 16))
+palette = {}
+for line in open(sys.argv[1], encoding="utf-8"):
+    match = re.fullmatch(r"palette = (\d+)=#([0-9A-Fa-f]{6})\n?", line)
+    if match:
+        palette[int(match.group(1))] = match.group(2)
+
+def luminance(hex_value):
+    channels = [int(hex_value[offset:offset + 2], 16) / 255 for offset in (0, 2, 4)]
+    linear = [channel / 12.92 if channel <= 0.04045 else ((channel + 0.055) / 1.055) ** 2.4 for channel in channels]
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
+
+background_luminance = luminance(background)
+for index in sorted(text_indices):
+    color_luminance = luminance(palette[index])
+    ratio = (max(background_luminance, color_luminance) + 0.05) / (min(background_luminance, color_luminance) + 0.05)
+    if ratio < 4.5:
+        raise SystemExit(f"Glade palette {index} contrast is {ratio:.2f}:1; need at least 4.5:1")
+PY
 
   while IFS='=' read -r raw_key raw_value; do
     key=$(printf '%s' "$raw_key" | tr -d '[:space:]')

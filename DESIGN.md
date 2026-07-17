@@ -106,6 +106,15 @@ duration, and rose signals errors without overwhelming the surface.
 
 ### Named Rules
 
+**The Glade Differentiation Rule.** Dreamlike Glade separates terminal
+status categories through hue families first: rose for failures, forest
+green for success, ochre for time or warnings, blue for information,
+violet for contextual identity, lagoon for runtimes, and muted teal for
+low-emphasis metadata. Bright ANSI entries intensify the same role rather
+than introduce a second meaning. Text-capable ANSI entries must maintain
+at least 4.5:1 contrast against the Glade background; bright black is
+reserved as the directory-capsule surface.
+
 **The Shared Semantics Rule.** A light/dark switch may change the actual color,
 but never the meaning of an ANSI role. Keep branch, runtime, duration, success,
 and error assignments stable across both themes.
