@@ -3,6 +3,7 @@ set -eu
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 STARSHIP_CONFIG_FILE="$PACKAGE_DIR/starship/starship.toml"
+STARSHIP_PLAIN_CONFIG_FILE="$PACKAGE_DIR/starship/starship-plain.toml"
 GHOSTTY_CONFIG_FILE="$PACKAGE_DIR/ghostty/config"
 GHOSTTY_THEME_FILE="$PACKAGE_DIR/ghostty/themes/Dreamlike Canopy"
 GHOSTTY_LIGHT_THEME_FILE="$PACKAGE_DIR/ghostty/themes/Dreamlike Glade"
@@ -34,7 +35,9 @@ assert_same() {
 
 validate_starship() {
   command -v starship >/dev/null 2>&1 || fail "starship is required for validation"
-  STARSHIP_CONFIG="$STARSHIP_CONFIG_FILE" starship print-config >/dev/null
+  for config_file in "$STARSHIP_CONFIG_FILE" "$STARSHIP_PLAIN_CONFIG_FILE"; do
+    STARSHIP_CONFIG="$config_file" starship print-config >/dev/null
+  done
 
   assert_contains "$STARSHIP_CONFIG_FILE" 'format = "[](fg:capsule)'
   assert_contains "$STARSHIP_CONFIG_FILE" '[](fg:capsule)  "'
@@ -48,6 +51,10 @@ validate_starship() {
   assert_contains "$STARSHIP_CONFIG_FILE" '[$deleted](fg:coral)'
   assert_contains "$STARSHIP_CONFIG_FILE" '[$modified](fg:sunlight)'
   assert_contains "$STARSHIP_CONFIG_FILE" '[$staged](fg:canopy)'
+  assert_not_contains "$STARSHIP_PLAIN_CONFIG_FILE" ''
+  assert_not_contains "$STARSHIP_PLAIN_CONFIG_FILE" ''
+  assert_not_contains "$STARSHIP_PLAIN_CONFIG_FILE" ''
+  assert_contains "$STARSHIP_PLAIN_CONFIG_FILE" 'read_only = " [readonly]"'
 
   rendered=$(STARSHIP_CONFIG="$STARSHIP_CONFIG_FILE" starship module directory \
     --path "$PACKAGE_DIR/starship" \
