@@ -70,13 +70,14 @@ generic neon hacker theme, a glossy SaaS dashboard, or decorative glass UI.
 - Deep forest teal in dark mode; open green-tinted neutral in light mode.
 - Shared ANSI semantics across automatic light/dark switching.
 - Geist Mono typography at a stable 14px reading size.
-- Full paths, compact status modules, and a rounded Powerline directory capsule.
+- Full paths, semantic Git feedback, and an optional compact prompt preset for split panes.
 
 ## Colors
 
 The palette is a full semantic forest spectrum: teal and mint establish the
 environment, violet and blue separate contextual states, sunlight marks time or
-duration, and rose signals errors without overwhelming the surface.
+duration, and rose signals destructive or failed states without overwhelming
+the surface.
 
 ### Primary
 
@@ -110,6 +111,11 @@ duration, and rose signals errors without overwhelming the surface.
 but never the meaning of an ANSI role. Keep branch, runtime, duration, success,
 and error assignments stable across both themes.
 
+**The Risk Signal Rule.** Coral is reserved for conflict and deletion; sunlight
+marks attention states such as modification, divergence, and being behind;
+canopy green marks positive progress such as staging or being ahead. Symbols
+remain visible so risk is never communicated by color alone.
+
 ## Typography
 
 **Display Font:** None; this is a terminal-native system.
@@ -136,8 +142,9 @@ spacing, semantic color, and module order.
 
 The system uses atmospheric depth rather than card shadows. Ghostty supplies a
 20px background blur and each theme controls its own translucency: 86% for
-Canopy and 78% for Glade. The terminal remains one continuous surface; depth is
-created by the backdrop and the darker directory capsule, not floating panels.
+Canopy and 78% for Glade; both apply a 4.5 minimum-contrast guard. The terminal
+remains one continuous surface; depth is created by the backdrop and the darker
+directory capsule, not floating panels.
 
 ### Named Rules
 
@@ -164,8 +171,9 @@ layers or decorative glass containers.
 
 ### Status Modules
 
-- **Git:** Violet branch name; canopy green status symbols; explicit symbols for modified, staged, deleted, ahead, behind, and diverged states.
-- **Runtimes:** Lagoon/cyan for Node, Python, Rust, and Go versions.
+- **Git:** Violet branch name; coral for conflicted/deleted, sunlight for modified/renamed/diverged/behind, canopy green for staged/ahead, and mist for untracked/stashed. Each state also has an explicit symbol.
+- **Runtimes:** Lagoon/cyan for Node, Python, Rust, and Go versions in the full prompt.
+- **Compact preset:** Preserves the directory capsule, Git, duration, clock, and prompt state while omitting runtime and package modules for split panes.
 - **Time and duration:** Mist for the clock; sunlight/yellow for commands taking at least two seconds.
 - **Prompt state:** Mint success, coral error, and canopy Vim-command state.
 
@@ -175,10 +183,10 @@ layers or decorative glass containers.
 
 - **Do** preserve the `light:Dreamlike Glade,dark:Dreamlike Canopy` pairing so the system follows macOS Appearance.
 - **Do** use ANSI semantic roles so Starship adapts with Ghostty automatically.
-- **Do** keep foreground contrast strong: Glade uses a 4.5 minimum contrast guard and deep teal ink.
+- **Do** keep foreground contrast strong: both themes use a 4.5 minimum-contrast guard; Glade also uses deep teal ink.
 - **Do** keep the full working path visible and truncate only the home directory to `~`.
 - **Do** use the existing 18px / 14px window padding and 20px blur as the environmental frame.
-- **Do** reserve rose/coral for errors and sunlight/yellow for time-related context.
+- **Do** reserve rose/coral for destructive Git states and prompt errors; use sunlight/yellow for duration and Git attention states.
 
 ### Don't:
 
