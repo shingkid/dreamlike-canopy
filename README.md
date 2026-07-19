@@ -59,8 +59,9 @@ From the extracted package directory, run:
 ./scripts/install.sh
 ```
 
-The installer replaces only these four files, preserving their previous
-versions in `~/.config/dreamlike-canopy-backups/<timestamp>/`:
+The installer replaces only these four files, writing through any existing
+non-dangling symlink so a dotfiles manager keeps owning the destination. It
+preserves each previous target version in `~/.config/dreamlike-canopy-backups/<timestamp>/`:
 
 - `~/.config/ghostty/config`
 - `~/.config/ghostty/themes/Dreamlike Canopy`

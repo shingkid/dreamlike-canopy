@@ -54,7 +54,7 @@ install_file() {
   staged_name=$1
   destination=$2
   mkdir -p "$(dirname -- "$destination")"
-  mv -f "$STAGE_DIR/$staged_name" "$destination"
+  cp "$STAGE_DIR/$staged_name" "$destination"
 }
 
 mkdir -p "$CONFIG_DIR" "$GHOSTTY_DIR/themes"

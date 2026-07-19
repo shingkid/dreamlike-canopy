@@ -282,6 +282,38 @@ SH
   [ ! -e "$empty_home/.config/ghostty/themes/Dreamlike Glade" ] || fail "rollback did not remove newly installed light theme"
   [ ! -e "$empty_home/.config/starship.toml" ] || fail "rollback did not remove newly installed Starship config"
 
+  linked_home="$test_root/linked-home"
+  linked_targets="$test_root/linked-targets"
+  mkdir -p "$linked_home/.config/ghostty/themes" "$linked_targets"
+  printf '%s\n' 'linked ghostty config' > "$linked_targets/ghostty-config"
+  printf '%s\n' 'linked canopy theme' > "$linked_targets/dreamlike-canopy-theme"
+  printf '%s\n' 'linked glade theme' > "$linked_targets/dreamlike-glade-theme"
+  printf '%s\n' 'linked starship config' > "$linked_targets/starship.toml"
+  ln -s "$linked_targets/ghostty-config" "$linked_home/.config/ghostty/config"
+  ln -s "$linked_targets/dreamlike-canopy-theme" "$linked_home/.config/ghostty/themes/Dreamlike Canopy"
+  ln -s "$linked_targets/dreamlike-glade-theme" "$linked_home/.config/ghostty/themes/Dreamlike Glade"
+  ln -s "$linked_targets/starship.toml" "$linked_home/.config/starship.toml"
+
+  TARGET_HOME="$linked_home" "$PACKAGE_DIR/scripts/install.sh" >/dev/null
+  [ -L "$linked_home/.config/ghostty/config" ] || fail "install replaced Ghostty config symlink"
+  [ -L "$linked_home/.config/ghostty/themes/Dreamlike Canopy" ] || fail "install replaced Canopy theme symlink"
+  [ -L "$linked_home/.config/ghostty/themes/Dreamlike Glade" ] || fail "install replaced Glade theme symlink"
+  [ -L "$linked_home/.config/starship.toml" ] || fail "install replaced Starship config symlink"
+  assert_same "$GHOSTTY_CONFIG_FILE" "$linked_targets/ghostty-config"
+  assert_same "$GHOSTTY_THEME_FILE" "$linked_targets/dreamlike-canopy-theme"
+  assert_same "$GHOSTTY_LIGHT_THEME_FILE" "$linked_targets/dreamlike-glade-theme"
+  assert_same "$STARSHIP_CONFIG_FILE" "$linked_targets/starship.toml"
+
+  TARGET_HOME="$linked_home" "$PACKAGE_DIR/scripts/rollback.sh" >/dev/null
+  [ -L "$linked_home/.config/ghostty/config" ] || fail "rollback replaced Ghostty config symlink"
+  [ -L "$linked_home/.config/ghostty/themes/Dreamlike Canopy" ] || fail "rollback replaced Canopy theme symlink"
+  [ -L "$linked_home/.config/ghostty/themes/Dreamlike Glade" ] || fail "rollback replaced Glade theme symlink"
+  [ -L "$linked_home/.config/starship.toml" ] || fail "rollback replaced Starship config symlink"
+  [ "$(cat "$linked_targets/ghostty-config")" = 'linked ghostty config' ] || fail "rollback did not restore linked Ghostty config"
+  [ "$(cat "$linked_targets/dreamlike-canopy-theme")" = 'linked canopy theme' ] || fail "rollback did not restore linked Canopy theme"
+  [ "$(cat "$linked_targets/dreamlike-glade-theme")" = 'linked glade theme' ] || fail "rollback did not restore linked Glade theme"
+  [ "$(cat "$linked_targets/starship.toml")" = 'linked starship config' ] || fail "rollback did not restore linked Starship config"
+
   rm -rf "$test_root"
   trap - EXIT HUP INT TERM
 }
