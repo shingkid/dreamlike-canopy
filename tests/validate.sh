@@ -49,14 +49,18 @@ validate_starship() {
   assert_contains "$STARSHIP_CONFIG_FILE" 'success_symbol = "[❯](fg:mint)"'
   assert_contains "$STARSHIP_CONFIG_FILE" 'capsule = "bright-black"'
   assert_contains "$STARSHIP_CONFIG_FILE" 'capsule_text = "bright-white"'
-  assert_contains "$STARSHIP_CONFIG_FILE" '[$conflicted](fg:coral)'
-  assert_contains "$STARSHIP_CONFIG_FILE" '[$deleted](fg:coral)'
+  assert_contains "$STARSHIP_CONFIG_FILE" 'rose = "bright-red"'
+  assert_contains "$STARSHIP_CONFIG_FILE" '[$conflicted](fg:rose)'
+  assert_contains "$STARSHIP_CONFIG_FILE" '[$deleted](fg:rose)'
   assert_contains "$STARSHIP_CONFIG_FILE" '[$modified](fg:sunlight)'
   assert_contains "$STARSHIP_CONFIG_FILE" '[$staged](fg:canopy)'
   assert_not_contains "$STARSHIP_PLAIN_CONFIG_FILE" ''
   assert_not_contains "$STARSHIP_PLAIN_CONFIG_FILE" ''
   assert_not_contains "$STARSHIP_PLAIN_CONFIG_FILE" ''
   assert_contains "$STARSHIP_PLAIN_CONFIG_FILE" 'read_only = " [readonly]"'
+  assert_contains "$STARSHIP_PLAIN_CONFIG_FILE" 'rose = "bright-red"'
+  assert_contains "$STARSHIP_PLAIN_CONFIG_FILE" 'format = "[$conflicted](fg:rose)[$deleted](fg:rose)[$modified](fg:sunlight)[$renamed](fg:sunlight)[$ahead_behind](fg:sunlight)[$staged](fg:canopy)[$untracked](fg:mist)[$stashed](fg:mist)"'
+  assert_not_contains "$STARSHIP_PLAIN_CONFIG_FILE" 'style = "fg:canopy"'
 
   rendered=$(STARSHIP_CONFIG="$STARSHIP_CONFIG_FILE" starship module directory \
     --path "$PACKAGE_DIR/starship" \
@@ -140,7 +144,7 @@ validate_transient_zsh() {
   esac
   case "$failure" in
     *"$(printf '\033[91m')"*) ;;
-    *) fail "failed transient character is not coral" ;;
+    *) fail "failed transient character is not rose" ;;
   esac
 }
 
@@ -215,6 +219,8 @@ validate_ghostty_static() {
   assert_contains "$README_FILE" 'tofu'
   assert_contains "$README_FILE" 'stages all four files before replacing any destination'
   assert_contains "$README_FILE" 'transient-zsh.zsh'
+  assert_contains "$README_FILE" 'Rose marks destructive states'
+  assert_not_contains "$README_FILE" 'coral'
   assert_contains "$TRANSIENT_ZSH_FILE" 'starship_transient_prompt_func()'
   assert_contains "$TRANSIENT_ZSH_FILE" 'starship module character'
   assert_contains "$TRANSIENT_ZSH_FILE" 'enable_transience'
@@ -243,16 +249,18 @@ exercise_install_and_rollback() {
   printf '%s\n' 'old light theme' > "$existing_home/.config/ghostty/themes/Dreamlike Glade"
   printf '%s\n' 'old starship config' > "$existing_home/.config/starship.toml"
 
-  copy_wrapper="$test_root/fail-staging-copy.sh"
+  copy_wrapper_dir="$test_root/bin"
+  copy_wrapper="$copy_wrapper_dir/cp"
+  mkdir -p "$copy_wrapper_dir"
   cat > "$copy_wrapper" <<'SH'
 #!/bin/sh
 case "$2" in
   */dreamlike-canopy-stage.*/*) exit 1 ;;
 esac
-exec cp "$@"
+exec /bin/cp "$@"
 SH
   chmod +x "$copy_wrapper"
-  if TARGET_HOME="$existing_home" DREAMLIKE_CANOPY_CP="$copy_wrapper" \
+  if PATH="$copy_wrapper_dir:$PATH" TARGET_HOME="$existing_home" \
     "$PACKAGE_DIR/scripts/install.sh" >"$test_root/failed-install.out" 2>&1; then
     fail "install unexpectedly succeeded after staged copy failure"
   fi
@@ -260,6 +268,11 @@ SH
   [ "$(cat "$existing_home/.config/ghostty/themes/Dreamlike Canopy")" = 'old theme' ] || fail "staged-copy failure changed Canopy theme"
   [ "$(cat "$existing_home/.config/ghostty/themes/Dreamlike Glade")" = 'old light theme' ] || fail "staged-copy failure changed Glade theme"
   [ "$(cat "$existing_home/.config/starship.toml")" = 'old starship config' ] || fail "staged-copy failure changed Starship config"
+
+  override_home="$test_root/override-home"
+  mkdir -p "$override_home"
+  TARGET_HOME="$override_home" DREAMLIKE_CANOPY_CP=false "$PACKAGE_DIR/scripts/install.sh" >/dev/null
+  assert_same "$STARSHIP_CONFIG_FILE" "$override_home/.config/starship.toml"
 
   TARGET_HOME="$existing_home" "$PACKAGE_DIR/scripts/install.sh" >/dev/null
   assert_same "$GHOSTTY_CONFIG_FILE" "$existing_home/.config/ghostty/config"

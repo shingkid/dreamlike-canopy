@@ -9,7 +9,6 @@ GHOSTTY_DIR="$CONFIG_DIR/ghostty"
 STARSHIP_FILE="$CONFIG_DIR/starship.toml"
 STAMP=$(date +%Y%m%d-%H%M%S)
 BACKUP_DIR="$CONFIG_DIR/dreamlike-canopy-backups/$STAMP"
-COPY_COMMAND=${DREAMLIKE_CANOPY_CP:-cp}
 STAGE_DIR=''
 COMMIT_STARTED=false
 
@@ -47,7 +46,7 @@ stage_file() {
   source_file=$1
   staged_name=$2
   [ -r "$source_file" ] || { printf '%s\n' "Missing or unreadable package file: $source_file" >&2; exit 1; }
-  "$COPY_COMMAND" "$source_file" "$STAGE_DIR/$staged_name"
+  cp "$source_file" "$STAGE_DIR/$staged_name"
 }
 
 install_file() {

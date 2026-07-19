@@ -91,7 +91,7 @@ Ghostty's automatic light/dark switching.
 
 ### Transient completed prompts (Zsh)
 
-To replace each completed full prompt with the mint success or coral error
+To replace each completed full prompt with the mint success or Rose error
 prompt character, source the included self-contained Zsh hook **after** Starship
 initialization. It does not require a plugin manager or another transience helper:
 
@@ -140,13 +140,13 @@ homes. If the `ghostty` CLI is available, the suite also runs Ghostty's
 ## Git status symbols
 
 The prompt uses both symbols and color so status remains understandable without
-color perception. Coral marks destructive states, sunlight marks attention,
+color perception. Rose marks destructive states, sunlight marks attention,
 and green marks staged progress. Remote synchronization is shown in sunlight.
 
 | Symbol | Meaning | Color role |
 | --- | --- | --- |
-| `~` | conflicted | coral |
-| `✘` | deleted | coral |
+| `~` | conflicted | rose |
+| `✘` | deleted | rose |
 | `!` | modified | sunlight |
 | `»` | renamed | sunlight |
 | `⇕` | diverged | sunlight |

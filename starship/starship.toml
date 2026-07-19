@@ -24,7 +24,7 @@ canopy = "green"
 lagoon = "cyan"
 violet = "bright-magenta"
 sunlight = "yellow"
-coral = "bright-red"
+rose = "bright-red"
 
 [directory]
 truncation_length = 0
@@ -40,9 +40,9 @@ format = "[$branch]($style)"
 style = "fg:violet"
 
 [git_status]
-# Risk is semantic: coral for destructive states, sunlight for remote
+# Risk is semantic: rose for destructive states, sunlight for remote
 # synchronization, canopy green for staged progress, and mist for neutral inventory.
-format = "[$conflicted](fg:coral)[$deleted](fg:coral)[$modified](fg:sunlight)[$renamed](fg:sunlight)[$ahead_behind](fg:sunlight)[$staged](fg:canopy)[$untracked](fg:mist)[$stashed](fg:mist)"
+format = "[$conflicted](fg:rose)[$deleted](fg:rose)[$modified](fg:sunlight)[$renamed](fg:sunlight)[$ahead_behind](fg:sunlight)[$staged](fg:canopy)[$untracked](fg:mist)[$stashed](fg:mist)"
 conflicted = "~"
 ahead = "⇡${count}"
 behind = "⇣${count}"
@@ -87,5 +87,5 @@ style = "fg:mist"
 
 [character]
 success_symbol = "[❯](fg:mint)"
-error_symbol = "[❯](fg:coral)"
+error_symbol = "[❯](fg:rose)"
 vimcmd_symbol = "[❮](fg:canopy)"
