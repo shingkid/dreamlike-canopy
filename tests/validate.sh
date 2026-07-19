@@ -109,6 +109,41 @@ validate_starship() {
   esac
 }
 
+validate_transient_zsh() {
+  command -v zsh >/dev/null 2>&1 || fail "zsh is required for transient prompt validation"
+
+  source_result=$(TRANSIENT_ZSH_FILE="$TRANSIENT_ZSH_FILE" zsh -f -c '
+    eval "$(starship init zsh)"
+    source "$TRANSIENT_ZSH_FILE" || exit $?
+    typeset -f enable_transience
+    typeset -f starship_transient_prompt_func
+    typeset -f starship_transient_prompt_zle_line_init
+    zle -l zle-line-init
+  ' 2>&1) || fail "plain Zsh + Starship could not source transient-zsh.zsh: $source_result"
+  case "$source_result" in
+    *enable_transience*starship_transient_prompt_func*starship_transient_prompt_zle_line_init*) ;;
+    *) fail "transient-zsh.zsh did not install its Zsh hook" ;;
+  esac
+
+  success=$(STARSHIP_CONFIG="$STARSHIP_CONFIG_FILE" TRANSIENT_ZSH_FILE="$TRANSIENT_ZSH_FILE" zsh -f -c '
+    source "$TRANSIENT_ZSH_FILE"
+    starship_transient_prompt_func 0
+  ')
+  failure=$(STARSHIP_CONFIG="$STARSHIP_CONFIG_FILE" TRANSIENT_ZSH_FILE="$TRANSIENT_ZSH_FILE" zsh -f -c '
+    source "$TRANSIENT_ZSH_FILE"
+    starship_transient_prompt_func 1
+  ')
+  [ "$success" != "$failure" ] || fail "transient character does not vary by command status"
+  case "$success" in
+    *"$(printf '\033[92m')"*) ;;
+    *) fail "successful transient character is not mint" ;;
+  esac
+  case "$failure" in
+    *"$(printf '\033[91m')"*) ;;
+    *) fail "failed transient character is not coral" ;;
+  esac
+}
+
 validate_ghostty_static() {
   known_config_keys='theme font-family font-size background-opacity background-blur window-padding-x window-padding-y cursor-style cursor-style-blink shell-integration'
   known_theme_keys='background foreground cursor-color cursor-text selection-background selection-foreground palette background-opacity minimum-contrast'
@@ -254,6 +289,7 @@ SH
 sh -n "$PACKAGE_DIR/scripts/install.sh"
 sh -n "$PACKAGE_DIR/scripts/rollback.sh"
 validate_starship
+validate_transient_zsh
 validate_ghostty_static
 exercise_install_and_rollback
 

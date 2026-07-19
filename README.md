@@ -91,7 +91,8 @@ Ghostty's automatic light/dark switching.
 ### Transient completed prompts (Zsh)
 
 To replace each completed full prompt with the mint success or coral error
-prompt character, source the included hook **after** Starship initialization:
+prompt character, source the included self-contained Zsh hook **after** Starship
+initialization. It does not require a plugin manager or another transience helper:
 
 ```sh
 eval "$(starship init zsh)"
