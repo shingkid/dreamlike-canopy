@@ -1,9 +1,4 @@
-# Dreamlike Canopy for Starship — Design A
-# A polished Powerline capsule for the directory, airy contextual modules,
-# and a luminous mint prompt character on a clean second line.
-
 "$schema" = "https://starship.rs/config-schema.json"
-
 palette = "dreamlike_canopy"
 add_newline = true
 scan_timeout = 30
@@ -14,8 +9,6 @@ $directory$git_branch$git_status$nodejs$python$rust$golang$package$cmd_duration$
 right_format = "$time"
 
 [palettes.dreamlike_canopy]
-# Use terminal ANSI colors so Starship follows Ghostty's active light/dark
-# theme without a separate shell configuration.
 mist = "white"
 capsule = "bright-black"
 capsule_text = "bright-white"
@@ -30,8 +23,8 @@ rose = "bright-red"
 truncation_length = 0
 truncate_to_repo = false
 truncation_symbol = "…/"
-read_only = " "
-format = "[](fg:capsule)[ $path$read_only ]($style)[](fg:capsule)  "
+read_only = " [readonly]"
+format = "[ $path$read_only ]($style)  "
 style = "fg:capsule_text bg:capsule"
 
 [git_branch]
@@ -40,8 +33,6 @@ format = "[$branch]($style)"
 style = "fg:violet"
 
 [git_status]
-# Risk is semantic: rose for destructive states, sunlight for remote
-# synchronization, canopy green for staged progress, and mist for neutral inventory.
 format = "[$conflicted](fg:rose)[$deleted](fg:rose)[$modified](fg:sunlight)[$renamed](fg:sunlight)[$ahead_behind](fg:sunlight)[$staged](fg:canopy)[$untracked](fg:mist)[$stashed](fg:mist)"
 conflicted = "~"
 ahead = "⇡${count}"

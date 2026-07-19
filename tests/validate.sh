@@ -3,6 +3,9 @@ set -eu
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 STARSHIP_CONFIG_FILE="$PACKAGE_DIR/starship/starship.toml"
+STARSHIP_PLAIN_CONFIG_FILE="$PACKAGE_DIR/starship/starship-plain.toml"
+TRANSIENT_ZSH_FILE="$PACKAGE_DIR/starship/transient-zsh.zsh"
+README_FILE="$PACKAGE_DIR/README.md"
 GHOSTTY_CONFIG_FILE="$PACKAGE_DIR/ghostty/config"
 GHOSTTY_THEME_FILE="$PACKAGE_DIR/ghostty/themes/Dreamlike Canopy"
 GHOSTTY_LIGHT_THEME_FILE="$PACKAGE_DIR/ghostty/themes/Dreamlike Glade"
@@ -34,7 +37,9 @@ assert_same() {
 
 validate_starship() {
   command -v starship >/dev/null 2>&1 || fail "starship is required for validation"
-  STARSHIP_CONFIG="$STARSHIP_CONFIG_FILE" starship print-config >/dev/null
+  for config_file in "$STARSHIP_CONFIG_FILE" "$STARSHIP_PLAIN_CONFIG_FILE"; do
+    STARSHIP_CONFIG="$config_file" starship print-config >/dev/null
+  done
 
   assert_contains "$STARSHIP_CONFIG_FILE" 'format = "[](fg:capsule)'
   assert_contains "$STARSHIP_CONFIG_FILE" '[](fg:capsule)  "'
@@ -44,10 +49,18 @@ validate_starship() {
   assert_contains "$STARSHIP_CONFIG_FILE" 'success_symbol = "[❯](fg:mint)"'
   assert_contains "$STARSHIP_CONFIG_FILE" 'capsule = "bright-black"'
   assert_contains "$STARSHIP_CONFIG_FILE" 'capsule_text = "bright-white"'
-  assert_contains "$STARSHIP_CONFIG_FILE" '[$conflicted](fg:coral)'
-  assert_contains "$STARSHIP_CONFIG_FILE" '[$deleted](fg:coral)'
+  assert_contains "$STARSHIP_CONFIG_FILE" 'rose = "bright-red"'
+  assert_contains "$STARSHIP_CONFIG_FILE" '[$conflicted](fg:rose)'
+  assert_contains "$STARSHIP_CONFIG_FILE" '[$deleted](fg:rose)'
   assert_contains "$STARSHIP_CONFIG_FILE" '[$modified](fg:sunlight)'
   assert_contains "$STARSHIP_CONFIG_FILE" '[$staged](fg:canopy)'
+  assert_not_contains "$STARSHIP_PLAIN_CONFIG_FILE" ''
+  assert_not_contains "$STARSHIP_PLAIN_CONFIG_FILE" ''
+  assert_not_contains "$STARSHIP_PLAIN_CONFIG_FILE" ''
+  assert_contains "$STARSHIP_PLAIN_CONFIG_FILE" 'read_only = " [readonly]"'
+  assert_contains "$STARSHIP_PLAIN_CONFIG_FILE" 'rose = "bright-red"'
+  assert_contains "$STARSHIP_PLAIN_CONFIG_FILE" 'format = "[$conflicted](fg:rose)[$deleted](fg:rose)[$modified](fg:sunlight)[$renamed](fg:sunlight)[$ahead_behind](fg:sunlight)[$staged](fg:canopy)[$untracked](fg:mist)[$stashed](fg:mist)"'
+  assert_not_contains "$STARSHIP_PLAIN_CONFIG_FILE" 'style = "fg:canopy"'
 
   rendered=$(STARSHIP_CONFIG="$STARSHIP_CONFIG_FILE" starship module directory \
     --path "$PACKAGE_DIR/starship" \
@@ -97,6 +110,41 @@ validate_starship() {
   case "$divergence_rendered" in
     *"⇕⇡1⇣1"*) ;;
     *) fail "rendered diverged Git status is missing ⇕⇡1⇣1" ;;
+  esac
+}
+
+validate_transient_zsh() {
+  command -v zsh >/dev/null 2>&1 || fail "zsh is required for transient prompt validation"
+
+  source_result=$(TRANSIENT_ZSH_FILE="$TRANSIENT_ZSH_FILE" zsh -f -c '
+    eval "$(starship init zsh)"
+    source "$TRANSIENT_ZSH_FILE" || exit $?
+    typeset -f enable_transience
+    typeset -f starship_transient_prompt_func
+    typeset -f starship_transient_prompt_zle_line_init
+    zle -l zle-line-init
+  ' 2>&1) || fail "plain Zsh + Starship could not source transient-zsh.zsh: $source_result"
+  case "$source_result" in
+    *enable_transience*starship_transient_prompt_func*starship_transient_prompt_zle_line_init*) ;;
+    *) fail "transient-zsh.zsh did not install its Zsh hook" ;;
+  esac
+
+  success=$(STARSHIP_CONFIG="$STARSHIP_CONFIG_FILE" TRANSIENT_ZSH_FILE="$TRANSIENT_ZSH_FILE" zsh -f -c '
+    source "$TRANSIENT_ZSH_FILE"
+    starship_transient_prompt_func 0
+  ')
+  failure=$(STARSHIP_CONFIG="$STARSHIP_CONFIG_FILE" TRANSIENT_ZSH_FILE="$TRANSIENT_ZSH_FILE" zsh -f -c '
+    source "$TRANSIENT_ZSH_FILE"
+    starship_transient_prompt_func 1
+  ')
+  [ "$success" != "$failure" ] || fail "transient character does not vary by command status"
+  case "$success" in
+    *"$(printf '\033[92m')"*) ;;
+    *) fail "successful transient character is not mint" ;;
+  esac
+  case "$failure" in
+    *"$(printf '\033[91m')"*) ;;
+    *) fail "failed transient character is not rose" ;;
   esac
 }
 
@@ -165,6 +213,17 @@ validate_ghostty_static() {
   validate_theme_file "$GHOSTTY_THEME_FILE"
   validate_theme_file "$GHOSTTY_LIGHT_THEME_FILE"
 
+  assert_contains "$README_FILE" 'fc-list | grep -i "GeistMono Nerd Font"'
+  assert_not_contains "$README_FILE" 'starship-compact.toml'
+  assert_contains "$README_FILE" 'starship-plain.toml'
+  assert_contains "$README_FILE" 'tofu'
+  assert_contains "$README_FILE" 'stages all four files before replacing any destination'
+  assert_contains "$README_FILE" 'transient-zsh.zsh'
+  assert_contains "$README_FILE" 'Rose marks destructive states'
+  assert_not_contains "$README_FILE" 'coral'
+  assert_contains "$TRANSIENT_ZSH_FILE" 'starship_transient_prompt_func()'
+  assert_contains "$TRANSIENT_ZSH_FILE" 'starship module character'
+  assert_contains "$TRANSIENT_ZSH_FILE" 'enable_transience'
   ghostty_bin=''
   if command -v ghostty >/dev/null 2>&1; then
     ghostty_bin=$(command -v ghostty)
@@ -190,6 +249,31 @@ exercise_install_and_rollback() {
   printf '%s\n' 'old light theme' > "$existing_home/.config/ghostty/themes/Dreamlike Glade"
   printf '%s\n' 'old starship config' > "$existing_home/.config/starship.toml"
 
+  copy_wrapper_dir="$test_root/bin"
+  copy_wrapper="$copy_wrapper_dir/cp"
+  mkdir -p "$copy_wrapper_dir"
+  cat > "$copy_wrapper" <<'SH'
+#!/bin/sh
+case "$2" in
+  */dreamlike-canopy-stage.*/*) exit 1 ;;
+esac
+exec /bin/cp "$@"
+SH
+  chmod +x "$copy_wrapper"
+  if PATH="$copy_wrapper_dir:$PATH" TARGET_HOME="$existing_home" \
+    "$PACKAGE_DIR/scripts/install.sh" >"$test_root/failed-install.out" 2>&1; then
+    fail "install unexpectedly succeeded after staged copy failure"
+  fi
+  [ "$(cat "$existing_home/.config/ghostty/config")" = 'old ghostty config' ] || fail "staged-copy failure changed Ghostty config"
+  [ "$(cat "$existing_home/.config/ghostty/themes/Dreamlike Canopy")" = 'old theme' ] || fail "staged-copy failure changed Canopy theme"
+  [ "$(cat "$existing_home/.config/ghostty/themes/Dreamlike Glade")" = 'old light theme' ] || fail "staged-copy failure changed Glade theme"
+  [ "$(cat "$existing_home/.config/starship.toml")" = 'old starship config' ] || fail "staged-copy failure changed Starship config"
+
+  override_home="$test_root/override-home"
+  mkdir -p "$override_home"
+  TARGET_HOME="$override_home" DREAMLIKE_CANOPY_CP=false "$PACKAGE_DIR/scripts/install.sh" >/dev/null
+  assert_same "$STARSHIP_CONFIG_FILE" "$override_home/.config/starship.toml"
+
   TARGET_HOME="$existing_home" "$PACKAGE_DIR/scripts/install.sh" >/dev/null
   assert_same "$GHOSTTY_CONFIG_FILE" "$existing_home/.config/ghostty/config"
   assert_same "$GHOSTTY_THEME_FILE" "$existing_home/.config/ghostty/themes/Dreamlike Canopy"
@@ -211,6 +295,38 @@ exercise_install_and_rollback() {
   [ ! -e "$empty_home/.config/ghostty/themes/Dreamlike Glade" ] || fail "rollback did not remove newly installed light theme"
   [ ! -e "$empty_home/.config/starship.toml" ] || fail "rollback did not remove newly installed Starship config"
 
+  linked_home="$test_root/linked-home"
+  linked_targets="$test_root/linked-targets"
+  mkdir -p "$linked_home/.config/ghostty/themes" "$linked_targets"
+  printf '%s\n' 'linked ghostty config' > "$linked_targets/ghostty-config"
+  printf '%s\n' 'linked canopy theme' > "$linked_targets/dreamlike-canopy-theme"
+  printf '%s\n' 'linked glade theme' > "$linked_targets/dreamlike-glade-theme"
+  printf '%s\n' 'linked starship config' > "$linked_targets/starship.toml"
+  ln -s "$linked_targets/ghostty-config" "$linked_home/.config/ghostty/config"
+  ln -s "$linked_targets/dreamlike-canopy-theme" "$linked_home/.config/ghostty/themes/Dreamlike Canopy"
+  ln -s "$linked_targets/dreamlike-glade-theme" "$linked_home/.config/ghostty/themes/Dreamlike Glade"
+  ln -s "$linked_targets/starship.toml" "$linked_home/.config/starship.toml"
+
+  TARGET_HOME="$linked_home" "$PACKAGE_DIR/scripts/install.sh" >/dev/null
+  [ -L "$linked_home/.config/ghostty/config" ] || fail "install replaced Ghostty config symlink"
+  [ -L "$linked_home/.config/ghostty/themes/Dreamlike Canopy" ] || fail "install replaced Canopy theme symlink"
+  [ -L "$linked_home/.config/ghostty/themes/Dreamlike Glade" ] || fail "install replaced Glade theme symlink"
+  [ -L "$linked_home/.config/starship.toml" ] || fail "install replaced Starship config symlink"
+  assert_same "$GHOSTTY_CONFIG_FILE" "$linked_targets/ghostty-config"
+  assert_same "$GHOSTTY_THEME_FILE" "$linked_targets/dreamlike-canopy-theme"
+  assert_same "$GHOSTTY_LIGHT_THEME_FILE" "$linked_targets/dreamlike-glade-theme"
+  assert_same "$STARSHIP_CONFIG_FILE" "$linked_targets/starship.toml"
+
+  TARGET_HOME="$linked_home" "$PACKAGE_DIR/scripts/rollback.sh" >/dev/null
+  [ -L "$linked_home/.config/ghostty/config" ] || fail "rollback replaced Ghostty config symlink"
+  [ -L "$linked_home/.config/ghostty/themes/Dreamlike Canopy" ] || fail "rollback replaced Canopy theme symlink"
+  [ -L "$linked_home/.config/ghostty/themes/Dreamlike Glade" ] || fail "rollback replaced Glade theme symlink"
+  [ -L "$linked_home/.config/starship.toml" ] || fail "rollback replaced Starship config symlink"
+  [ "$(cat "$linked_targets/ghostty-config")" = 'linked ghostty config' ] || fail "rollback did not restore linked Ghostty config"
+  [ "$(cat "$linked_targets/dreamlike-canopy-theme")" = 'linked canopy theme' ] || fail "rollback did not restore linked Canopy theme"
+  [ "$(cat "$linked_targets/dreamlike-glade-theme")" = 'linked glade theme' ] || fail "rollback did not restore linked Glade theme"
+  [ "$(cat "$linked_targets/starship.toml")" = 'linked starship config' ] || fail "rollback did not restore linked Starship config"
+
   rm -rf "$test_root"
   trap - EXIT HUP INT TERM
 }
@@ -218,6 +334,7 @@ exercise_install_and_rollback() {
 sh -n "$PACKAGE_DIR/scripts/install.sh"
 sh -n "$PACKAGE_DIR/scripts/rollback.sh"
 validate_starship
+validate_transient_zsh
 validate_ghostty_static
 exercise_install_and_rollback
 

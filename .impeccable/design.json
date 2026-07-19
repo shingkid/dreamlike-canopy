@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-19T13:42:59Z",
+  "title": "Design System: Dreamlike Canopy Terminal System",
+  "extensions": {
+    "colorMeta": {
+      "canopy-background": { "role": "neutral", "displayName": "Canopy Night", "canonical": "#07110F", "tonalRamp": ["#07110F", "#0B1715", "#17312E", "#24514D", "#3B6963", "#718A88", "#B1C4C0", "#ECF8F5"] },
+      "canopy-mint": { "role": "primary", "displayName": "Canopy Mint", "canonical": "#8FFFD2", "tonalRamp": ["#123D30", "#1D644F", "#2F8E70", "#50BA92", "#7FE3B2", "#8FFFD2", "#B8FFE3", "#E6FFF5"] },
+      "glade-background": { "role": "neutral", "displayName": "Glade Background", "canonical": "#E7F0E8", "tonalRamp": ["#1F4249", "#365C5E", "#506864", "#819A91", "#B0C3B4", "#D1DDD2", "#E7F0E8", "#F6FAF6"] },
+      "rose": { "role": "tertiary", "displayName": "Rose Risk Signal", "canonical": "#C96F78", "tonalRamp": ["#4A1D2A", "#713040", "#8E3D50", "#AD5362", "#C96F78", "#E4939A", "#F6C3C6", "#FFE9E9"] },
+      "sunlight": { "role": "tertiary", "displayName": "Sunlight Attention", "canonical": "#E8D79A", "tonalRamp": ["#382B0C", "#584415", "#86601F", "#AE852C", "#D1AF59", "#E8D79A", "#F5EABE", "#FFF9E5"] },
+      "violet": { "role": "secondary", "displayName": "Violet Branch", "canonical": "#9B86D3", "tonalRamp": ["#302043", "#4B3567", "#624781", "#7B61A7", "#9B86D3", "#B49CFF", "#D6CAFF", "#F1EDFF"] },
+      "lagoon": { "role": "secondary", "displayName": "Lagoon Runtime", "canonical": "#52D9D0", "tonalRamp": ["#123E40", "#1B5B5D", "#216D72", "#318F91", "#52B7B2", "#52D9D0", "#92EEE8", "#D8FFFB"] }
+    },
+    "typographyMeta": {
+      "body": { "displayName": "Terminal Mono", "purpose": "All shell output, prompt context, and status labels." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "appearance-switch", "value": "system-controlled", "purpose": "Ghostty applies the paired palette as macOS Appearance changes; no decorative animation." }
+    ],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Terminal Surface",
+      "kind": "custom",
+      "refersTo": "terminal-surface",
+      "description": "The continuous, high-contrast terminal canvas.",
+      "html": "<section class=\"ds-terminal\">~/code/dreamlike-canopy <span class=\"ds-prompt\">❯</span></section>",
+      "css": ".ds-terminal { padding: 14px 18px; background: #07110F; color: #D9E6E3; font: 400 14px/1.4 'Geist Mono', monospace; } .ds-prompt { color: #8FFFD2; }"
+    },
+    {
+      "name": "Directory Capsule",
+      "kind": "custom",
+      "refersTo": "directory-capsule",
+      "description": "A Powerline-framed full working path, with only the home prefix shortened.",
+      "html": "<span class=\"ds-directory\"><span class=\"ds-cap\"></span><span class=\"ds-path\"> ~/code/dreamlike-canopy </span><span class=\"ds-cap\"></span></span>",
+      "css": ".ds-directory { display: inline-flex; align-items: center; font: 400 14px/1.4 'Geist Mono', monospace; } .ds-cap, .ds-path { background: #24514D; color: #D9E6E3; } .ds-cap { color: #24514D; background: transparent; } .ds-path { padding: 0 1ch; }"
+    },
+    {
+      "name": "Prompt Character",
+      "kind": "custom",
+      "refersTo": "terminal-surface",
+      "description": "A compact command-state indicator: mint for success and rose for failure.",
+      "html": "<button class=\"ds-prompt-success\">❯</button><button class=\"ds-prompt-error\">❯</button>",
+      "css": ".ds-prompt-success, .ds-prompt-error { padding: 0; border: 0; background: transparent; font: 400 14px/1.4 'Geist Mono', monospace; cursor: default; } .ds-prompt-success { color: #8FFFD2; } .ds-prompt-error { color: #C96F78; } .ds-prompt-success:focus-visible, .ds-prompt-error:focus-visible { outline: 1px solid currentColor; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "A forest observatory after dusk.",
+    "overview": "Dreamlike Canopy treats the terminal as a quiet instrument panel inside a living forest: dark mode is a deep blue-green canopy, while light mode opens into a misty glade. The paired palettes preserve the same ANSI semantics, so the shell prompt, Git state, runtimes, and command feedback remain familiar as macOS Appearance changes. The system is atmospheric but practical: translucency, blur, and luminous mint are reserved for the terminal surface and prompt affordances; command output remains high-contrast and readable.",
+    "keyCharacteristics": ["Deep forest teal in dark mode; an open green-tinted neutral in light mode.", "Shared ANSI semantics across automatic light/dark switching.", "Geist Mono at a stable 14px reading size.", "Full paths, explicit Git symbols, and a Powerline directory capsule."],
+    "rules": [
+      { "name": "The Shared Semantics Rule", "body": "A light/dark switch may change a color’s value, never its ANSI meaning.", "section": "colors" },
+      { "name": "The Risk Signal Rule", "body": "Rose is reserved for conflict and deletion; sunlight marks modification and remote synchronization; green marks staged progress. Symbols remain visible so risk is never communicated by color alone.", "section": "colors" },
+      { "name": "The Instrument Rule", "body": "Do not introduce display faces, proportional labels, or variable headline scales.", "section": "typography" },
+      { "name": "The One-Surface Rule", "body": "Keep the terminal visually continuous. Use opacity, blur, selection, and the directory capsule for state; never add shadowed cards or decorative glass containers.", "section": "elevation" }
+    ],
+    "dos": ["Do preserve the light:Dreamlike Glade,dark:Dreamlike Canopy pairing so the system follows macOS Appearance.", "Do use ANSI semantic roles so Starship adapts with Ghostty automatically.", "Do retain the 4.5 minimum-contrast guard and Glade’s deep teal ink.", "Do keep the full working path visible and truncate only the home directory to ~."],
+    "donts": ["Don't introduce a separate light-mode Starship configuration; semantic ANSI colors are the adaptive bridge.", "Don't use neon accents, gradient text, or saturated decoration that competes with command output.", "Don't add floating cards, wide shadows, or default glassmorphism layers to a one-surface terminal.", "Don't change an ANSI color’s meaning between Canopy and Glade."]
+  }
+}
