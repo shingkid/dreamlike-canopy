@@ -71,29 +71,29 @@ The palette is a semantic forest spectrum: teal and mint establish place, violet
 
 ### Primary
 
-- **Canopy Night:** The dark terminal background and deepest surface.
-- **Canopy Mint:** Cursor, successful prompt, and bright positive state.
-- **Glade Teal:** Light-mode cursor and primary green accent.
+- **Canopy Night** (`#07110F`): The dark terminal background and deepest surface.
+- **Canopy Mint** (`#8FFFD2`): Cursor, successful prompt, and bright positive state.
+- **Glade Teal** (`#2D8D6C`): Light-mode cursor and primary green accent.
 
 ### Secondary
 
-- **Lagoon:** Runtime and language context in dark mode.
-- **Violet:** Branch context and secondary identity.
-- **Sky Blue:** Informational ANSI state.
+- **Lagoon** (`#52D9D0`): Runtime and language context in dark mode.
+- **Violet** (`#9B86D3`): Branch context and secondary identity.
+- **Sky Blue** (`#6794D8`): Informational ANSI state.
 
 ### Tertiary
 
-- **Sunlight:** Duration and Git attention state in dark mode.
-- **Rose:** Error and destructive feedback.
+- **Sunlight** (`#E8D79A`): Duration and Git attention state in dark mode.
+- **Rose** (`#C96F78`): Error and destructive feedback.
 
 ### Neutral
 
-- **Canopy Mist:** Dark-mode foreground and bright text.
-- **Glade Background:** Light-mode terminal surface.
-- **Glade Ink:** Light-mode foreground and strongest text.
-- **Deep Teal:** Dark selection family and directory-capsule source color.
-- **Lavender Selection:** Light-mode selection surface.
-- **Muted Teal:** Low-emphasis context in each theme.
+- **Canopy Mist** (`#D9E6E3`): Dark-mode foreground and bright text.
+- **Glade Background** (`#E7F0E8`): Light-mode terminal surface.
+- **Glade Ink** (`#1F4249`): Light-mode foreground and strongest text.
+- **Deep Teal** (`#24514D`): Dark selection family and directory-capsule source color.
+- **Lavender Selection** (`#D8D0E2`): Light-mode selection surface.
+- **Muted Teal** (`#718A88` in Canopy; `#506864` in Glade): Low-emphasis context in each theme.
 
 **The Shared Semantics Rule.** A light/dark switch may change a color’s value, never its ANSI meaning. Branch, runtime, duration, success, and error assignments stay stable across both themes.
 
