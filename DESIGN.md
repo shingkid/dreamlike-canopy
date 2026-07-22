@@ -1,6 +1,6 @@
 ---
-name: Dreamlike Canopy Terminal System
-description: An adaptive Ghostty and Starship system pairing nocturnal forest depth with an airy glade.
+name: Dreamlike Canopy Developer Environment
+description: An adaptive Ghostty, Starship, Codex, and Pi system pairing nocturnal forest depth with an airy glade.
 colors:
   canopy-background: "#07110F"
   canopy-foreground: "#D9E6E3"
@@ -48,13 +48,13 @@ components:
     padding: "0 1ch"
 ---
 
-# Design System: Dreamlike Canopy Terminal System
+# Design System: Dreamlike Canopy Developer Environment
 
 ## Overview
 
 **Creative North Star: “A forest observatory after dusk.”**
 
-Dreamlike Canopy treats the terminal as a quiet instrument panel inside a living forest: dark mode is a deep blue-green canopy, while light mode opens into a misty glade. The paired palettes preserve the same ANSI semantics, so the shell prompt, Git state, runtimes, and command feedback remain familiar as macOS Appearance changes.
+Dreamlike Canopy treats the developer environment as a quiet instrument panel inside a living forest: dark mode is a deep blue-green canopy, while light mode opens into a misty glade. The paired palettes preserve the same semantics across Ghostty, Starship, Codex, and Pi, so shell state, diffs, skills, thinking levels, and command feedback remain familiar as appearance changes.
 
 The system is atmospheric but practical. Translucency, blur, and luminous mint are reserved for the terminal surface and prompt affordances; command output remains high-contrast and readable. It is neither a generic neon hacker theme, a glossy SaaS dashboard, nor decorative glass UI.
 
@@ -62,6 +62,8 @@ The system is atmospheric but practical. Translucency, blur, and luminous mint a
 
 - Deep forest teal in dark mode; an open green-tinted neutral in light mode.
 - Shared ANSI semantics across automatic light/dark switching.
+- Matching Codex application chrome with semantic diff and skill colors.
+- Complete Pi TUI coverage, including tool states, syntax, thinking levels, bash mode, and exports.
 - Geist Mono at a stable 14px reading size.
 - Full paths, explicit Git symbols, and a Powerline directory capsule.
 
@@ -96,6 +98,10 @@ The palette is a semantic forest spectrum: teal and mint establish place, violet
 - **Muted Teal** (`#718A88` in Canopy; `#506864` in Glade): Low-emphasis context in each theme.
 
 **The Shared Semantics Rule.** A light/dark switch may change a color’s value, never its ANSI meaning. Branch, runtime, duration, success, and error assignments stay stable across both themes.
+
+In Codex, the same rule maps green to added work, rose to removed work, and violet to skills. The light Glade accent uses the deeper semantic green (`#2F7550`) instead of the brighter cursor teal so small UI text and controls remain readable against the glade surface.
+
+In Pi, the rule extends across all TUI roles: green remains success and added work, rose remains failure and removed work, sunlight remains warning and bash attention, lagoon and blue carry code context, and the violet ramp communicates increasing thinking depth.
 
 **The Risk Signal Rule.** Rose is reserved for conflict and deletion; sunlight marks modification and remote synchronization; green marks staged progress. Symbols remain visible so risk is never communicated by color alone.
 
@@ -144,6 +150,23 @@ The system uses atmospheric depth rather than card shadows. Ghostty applies a 20
 - **Time and duration:** Mist for the clock; sunlight/yellow for commands taking at least two seconds.
 - **Prompt state:** Mint success, rose error, and green Vim-command state.
 
+### Codex Application Chrome
+
+- **Surface and ink:** Canopy Night with Canopy Mist in dark mode; Glade Background with Glade Ink in light mode.
+- **Accent:** Canopy Mint in dark mode; the contrast-safe Glade Green in light mode.
+- **Semantic state:** Green for added diffs, rose for removed diffs, and violet for skills in both modes.
+- **Code themes:** Everforest in Canopy and Proof in Glade, paired with the exact Dreamlike chrome through Codex's native share format.
+- **Typography:** The same GeistMono Nerd Font / Geist Mono stack for code; the native Codex UI face remains unchanged.
+- **Atmosphere:** Translucent sidebars preserve depth without introducing separate glass panels.
+
+### Pi TUI
+
+- **Surface:** The live TUI inherits Canopy or Glade from Ghostty; explicit matching surfaces are supplied for HTML exports.
+- **Messages and tools:** Quiet tonal surfaces distinguish user, extension, pending, successful, and failed tool content without introducing floating-card contrast.
+- **Syntax and Markdown:** The forest spectrum carries the same roles as the terminal palette: violet keywords, blue functions and links, green strings and additions, lagoon types and code, sunlight numbers and headings, and rose removals.
+- **Thinking hierarchy:** Neutral off/minimal states progress through blue, lagoon, and the violet ramp; bash mode remains sunlight rather than borrowing an error color.
+- **Automatic mode:** `dreamlike-glade/dreamlike-canopy` follows Pi's terminal appearance detection.
+
 ## Do's and Don'ts
 
 ### Do:
@@ -154,6 +177,8 @@ The system uses atmospheric depth rather than card shadows. Ghostty applies a 20
 - **Do** keep the full working path visible and truncate only the home directory to `~`.
 - **Do** retain 18px / 14px window padding and 20px blur as the environmental frame.
 - **Do** reserve rose for destructive Git states and prompt errors; reserve sunlight for duration and Git attention states.
+- **Do** import Glade into Codex's light slot and Canopy into its dark slot, then use System appearance.
+- **Do** select `dreamlike-glade/dreamlike-canopy` in Pi so TUI and terminal switch together.
 
 ### Don't:
 
@@ -163,3 +188,5 @@ The system uses atmospheric depth rather than card shadows. Ghostty applies a 20
 - **Don't** shorten directory paths with `…/`; the design keeps the full path visible.
 - **Don't** change an ANSI color’s meaning between Canopy and Glade.
 - **Don't** use display fonts, proportional UI labels, or arbitrary rounded containers in the terminal system.
+- **Don't** swap the Codex diff or skill roles between light and dark mode.
+- **Don't** leave Pi's export backgrounds implicit; custom light themes otherwise fall back to dark-oriented export assumptions.

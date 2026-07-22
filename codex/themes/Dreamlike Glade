@@ -1,0 +1,1 @@
+codex-theme-v1:{"codeThemeId":"proof","theme":{"accent":"#2F7550","contrast":40,"fonts":{"code":"\"GeistMono Nerd Font\", \"Geist Mono\", ui-monospace, \"SFMono-Regular\"","ui":null},"ink":"#1F4249","opaqueWindows":false,"semanticColors":{"diffAdded":"#2F7550","diffRemoved":"#8E3D50","skill":"#624781"},"surface":"#E7F0E8"},"variant":"light"}

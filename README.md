@@ -1,4 +1,4 @@
-# Dreamlike Canopy — Ghostty + Starship
+# Dreamlike Canopy — Ghostty + Starship + Codex + Pi
 
 This package pairs dark Dreamlike Canopy with its light Dreamlike Glade
 companion and the Design A Starship prompt. Dreamlike Glade uses forest teal,
@@ -8,6 +8,17 @@ and adjusted for a readable light terminal. Ghostty follows the
 current macOS Appearance automatically. Starship uses the themes' ANSI colors,
 so its rounded directory capsule, Git context, status, runtimes, and prompt
 character adapt at the same time without a separate light-mode configuration.
+
+The package also includes matching Codex app themes. Dreamlike Glade carries
+the light chrome with Proof syntax highlighting; Dreamlike Canopy carries the
+dark chrome with Everforest syntax highlighting. Both use Codex's native theme
+share format, preserve the forest palette's semantic diff colors, and follow
+the app's system appearance setting as a pair.
+
+Pi receives the same paired treatment across its complete TUI token set:
+messages, tool states, Markdown, diffs, syntax highlighting, thinking levels,
+bash mode, and HTML exports. Its automatic theme mode follows the terminal's
+reported light or dark appearance.
 
 The directory capsule keeps the full path visible, shortening only the home
 folder to `~`.
@@ -22,6 +33,10 @@ Ghostty's blur.
 - `ghostty/themes/Dreamlike Glade` — the light Ghostty color theme
 - `ghostty/config` — the companion Ghostty settings
 - `starship/starship.toml` — adaptive Design A Starship configuration
+- `codex/themes/Dreamlike Canopy` — importable dark Codex app theme
+- `codex/themes/Dreamlike Glade` — importable light Codex app theme
+- `pi/themes/dreamlike-canopy.json` — dark Pi TUI and export theme
+- `pi/themes/dreamlike-glade.json` — light Pi TUI and export theme
 - `scripts/install.sh` — installs with timestamped backups
 - `scripts/rollback.sh` — restores the latest package backup
 - `tests/validate.sh` — syntax and isolated install/rollback checks
@@ -30,6 +45,8 @@ Ghostty's blur.
 
 - macOS with Ghostty installed
 - Starship installed and initialized by your shell
+- Codex app with Appearance theme import support (for the optional Codex pair)
+- Pi coding agent with custom theme support (for the optional Pi pair)
 - GeistMono Nerd Font installed for the rounded Powerline glyphs
 - Geist Mono is configured as the fallback font
 
@@ -74,6 +91,51 @@ printed `TARGET_HOME=... ./scripts/rollback.sh` command.
 
 Restart Ghostty completely (not merely a new terminal window), then open a
 new shell. On macOS, Ghostty applies opacity changes only after a full restart.
+
+## Import into Codex
+
+Codex app themes are imported from share strings instead of installed as files:
+
+1. Open **Codex → Settings → Appearance**.
+2. In the light theme section, choose **Import**, paste the complete contents
+   of `codex/themes/Dreamlike Glade`, and choose **Import theme**.
+3. In the dark theme section, choose **Import**, paste the complete contents
+   of `codex/themes/Dreamlike Canopy`, and choose **Import theme**.
+4. Set the app appearance to **System** to switch between Glade and Canopy with
+   macOS Appearance.
+
+The Codex share format pairs custom application chrome with one of Codex's
+built-in code themes. Glade uses Proof and Canopy uses Everforest because they
+retain the closest light and dark syntax relationships while the custom chrome
+supplies the exact Dreamlike surfaces, foregrounds, accents, diff colors, and
+Geist Mono stack. Both themes keep the sidebar translucent. Glade's UI accent
+uses the palette's deeper green (`#2F7550`) so small controls retain at least
+4.5:1 contrast against the glade surface.
+
+## Install into Pi
+
+Copy both JSON files into Pi's global theme directory:
+
+```sh
+mkdir -p ~/.pi/agent/themes
+cp pi/themes/dreamlike-glade.json ~/.pi/agent/themes/
+cp pi/themes/dreamlike-canopy.json ~/.pi/agent/themes/
+```
+
+Then open `/settings`, set the theme mode to **Automatic**, choose
+`dreamlike-glade` for light and `dreamlike-canopy` for dark. The equivalent
+`~/.pi/agent/settings.json` value is:
+
+```json
+{
+  "theme": "dreamlike-glade/dreamlike-canopy"
+}
+```
+
+Pi inherits its live TUI background from the terminal, so use this pair with
+the matching Ghostty themes for the intended surfaces. HTML exports do not
+inherit terminal colors; both JSON files therefore define explicit page, card,
+and informational backgrounds.
 
 ## Optional prompt profiles
 
@@ -124,7 +186,7 @@ To restore the most recent backup created by the installer:
 
 ## Validate locally
 
-Before installing, run the included validation suite:
+Before installing or importing, run the included validation suite:
 
 ```sh
 ./tests/validate.sh
@@ -133,8 +195,10 @@ Before installing, run the included validation suite:
 It loads the Starship TOML with `starship print-config`, renders the directory
 module to verify both rounded caps, checks both Ghostty themes and all 16 ANSI
 entries, verifies the per-theme opacity and contrast settings, checks both
-scripts with `sh -n`, and exercises installation plus rollback in temporary
-homes. If the `ghostty` CLI is available, the suite also runs Ghostty's
+scripts with `sh -n`, validates the Codex share strings and Pi theme schemas,
+semantic colors, and contrast, and exercises installation plus rollback in
+temporary homes. If the
+`ghostty` CLI is available, the suite also runs Ghostty's
 `+validate-config` parser on the main configuration and both theme files.
 
 ## Git status symbols
