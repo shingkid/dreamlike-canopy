@@ -9,6 +9,10 @@ README_FILE="$PACKAGE_DIR/README.md"
 GHOSTTY_CONFIG_FILE="$PACKAGE_DIR/ghostty/config"
 GHOSTTY_THEME_FILE="$PACKAGE_DIR/ghostty/themes/Dreamlike Canopy"
 GHOSTTY_LIGHT_THEME_FILE="$PACKAGE_DIR/ghostty/themes/Dreamlike Glade"
+CODEX_THEME_FILE="$PACKAGE_DIR/codex/themes/Dreamlike Canopy"
+CODEX_LIGHT_THEME_FILE="$PACKAGE_DIR/codex/themes/Dreamlike Glade"
+PI_THEME_FILE="$PACKAGE_DIR/pi/themes/dreamlike-canopy.json"
+PI_LIGHT_THEME_FILE="$PACKAGE_DIR/pi/themes/dreamlike-glade.json"
 
 fail() {
   printf '%s\n' "FAIL: $*" >&2
@@ -238,6 +242,242 @@ validate_ghostty_static() {
   fi
 }
 
+validate_codex_themes() {
+  command -v node >/dev/null 2>&1 || fail "node is required for Codex theme validation"
+
+  node - "$CODEX_LIGHT_THEME_FILE" "$CODEX_THEME_FILE" <<'NODE'
+const fs = require('fs');
+
+const prefix = 'codex-theme-v1:';
+const expected = [
+  {
+    path: process.argv[2],
+    variant: 'light',
+    codeThemeId: 'proof',
+    colors: {
+      accent: '#2F7550',
+      ink: '#1F4249',
+      surface: '#E7F0E8',
+      diffAdded: '#2F7550',
+      diffRemoved: '#8E3D50',
+      skill: '#624781',
+    },
+  },
+  {
+    path: process.argv[3],
+    variant: 'dark',
+    codeThemeId: 'everforest',
+    colors: {
+      accent: '#8FFFD2',
+      ink: '#D9E6E3',
+      surface: '#07110F',
+      diffAdded: '#7FE3B2',
+      diffRemoved: '#C96F78',
+      skill: '#9B86D3',
+    },
+  },
+];
+
+const hex = /^#[0-9A-Fa-f]{6}$/;
+
+function assertExactKeys(value, keys, label) {
+  const actual = Object.keys(value).sort().join(',');
+  const wanted = [...keys].sort().join(',');
+  if (actual !== wanted) throw new Error(`${label}: unexpected schema keys (${actual})`);
+}
+
+function luminance(value) {
+  const channels = [1, 3, 5].map((offset) => parseInt(value.slice(offset, offset + 2), 16) / 255);
+  const linear = channels.map((channel) => channel <= 0.04045
+    ? channel / 12.92
+    : ((channel + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+}
+
+function contrast(first, second) {
+  const values = [luminance(first), luminance(second)].sort((a, b) => b - a);
+  return (values[0] + 0.05) / (values[1] + 0.05);
+}
+
+for (const item of expected) {
+  const share = fs.readFileSync(item.path, 'utf8').trim();
+  if (!share.startsWith(prefix)) throw new Error(`${item.path}: missing ${prefix}`);
+  const parsed = JSON.parse(share.slice(prefix.length));
+  const theme = parsed.theme;
+  assertExactKeys(parsed, ['codeThemeId', 'theme', 'variant'], item.path);
+  if (!theme) throw new Error(`${item.path}: missing theme`);
+  assertExactKeys(theme, ['accent', 'contrast', 'fonts', 'ink', 'opaqueWindows', 'semanticColors', 'surface'], `${item.path}: theme`);
+  assertExactKeys(theme.fonts, ['code', 'ui'], `${item.path}: fonts`);
+  assertExactKeys(theme.semanticColors, ['diffAdded', 'diffRemoved', 'skill'], `${item.path}: semantic colors`);
+  if (parsed.variant !== item.variant) throw new Error(`${item.path}: wrong variant`);
+  if (parsed.codeThemeId !== item.codeThemeId) throw new Error(`${item.path}: wrong code theme`);
+  if (!Number.isInteger(theme.contrast) || theme.contrast < 0 || theme.contrast > 100) {
+    throw new Error(`${item.path}: invalid contrast`);
+  }
+  if (theme.opaqueWindows !== false) throw new Error(`${item.path}: sidebar must be translucent`);
+  if (!theme.fonts || typeof theme.fonts.code !== 'string' || theme.fonts.ui !== null) {
+    throw new Error(`${item.path}: invalid font configuration`);
+  }
+  const actual = {
+    accent: theme.accent,
+    ink: theme.ink,
+    surface: theme.surface,
+    ...theme.semanticColors,
+  };
+  for (const [role, value] of Object.entries(item.colors)) {
+    if (!hex.test(actual[role])) throw new Error(`${item.path}: ${role} is not a hex color`);
+    if (actual[role] !== value) throw new Error(`${item.path}: unexpected ${role}`);
+    if (role !== 'surface' && contrast(value, item.colors.surface) < 4.5) {
+      throw new Error(`${item.path}: ${role} does not reach 4.5:1 against the surface`);
+    }
+  }
+}
+NODE
+
+  assert_contains "$README_FILE" '## Import into Codex'
+  assert_contains "$README_FILE" 'codex/themes/Dreamlike Glade'
+  assert_contains "$README_FILE" 'codex/themes/Dreamlike Canopy'
+}
+
+validate_pi_themes() {
+  command -v node >/dev/null 2>&1 || fail "node is required for Pi theme validation"
+
+  node - "$PI_LIGHT_THEME_FILE" "$PI_THEME_FILE" <<'NODE'
+const fs = require('fs');
+
+const requiredColors = [
+  'accent', 'border', 'borderAccent', 'borderMuted', 'success', 'error', 'warning',
+  'muted', 'dim', 'text', 'thinkingText', 'selectedBg', 'userMessageBg',
+  'userMessageText', 'customMessageBg', 'customMessageText', 'customMessageLabel',
+  'toolPendingBg', 'toolSuccessBg', 'toolErrorBg', 'toolTitle', 'toolOutput',
+  'mdHeading', 'mdLink', 'mdLinkUrl', 'mdCode', 'mdCodeBlock', 'mdCodeBlockBorder',
+  'mdQuote', 'mdQuoteBorder', 'mdHr', 'mdListBullet', 'toolDiffAdded',
+  'toolDiffRemoved', 'toolDiffContext', 'syntaxComment', 'syntaxKeyword',
+  'syntaxFunction', 'syntaxVariable', 'syntaxString', 'syntaxNumber', 'syntaxType',
+  'syntaxOperator', 'syntaxPunctuation', 'thinkingOff', 'thinkingMinimal',
+  'thinkingLow', 'thinkingMedium', 'thinkingHigh', 'thinkingXhigh', 'thinkingMax',
+  'bashMode',
+];
+
+const expected = [
+  {
+    path: process.argv[2],
+    name: 'dreamlike-glade',
+    surface: '#E7F0E8',
+    accent: '#2F7550',
+    added: '#2F7550',
+    removed: '#8E3D50',
+  },
+  {
+    path: process.argv[3],
+    name: 'dreamlike-canopy',
+    surface: '#07110F',
+    accent: '#8FFFD2',
+    added: '#7FE3B2',
+    removed: '#C96F78',
+  },
+];
+
+const hex = /^#[0-9A-Fa-f]{6}$/;
+
+function assertExactKeys(value, keys, label) {
+  const actual = Object.keys(value).sort().join(',');
+  const wanted = [...keys].sort().join(',');
+  if (actual !== wanted) throw new Error(`${label}: unexpected keys (${actual})`);
+}
+
+function luminance(value) {
+  const channels = [1, 3, 5].map((offset) => parseInt(value.slice(offset, offset + 2), 16) / 255);
+  const linear = channels.map((channel) => channel <= 0.04045
+    ? channel / 12.92
+    : ((channel + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+}
+
+function contrast(first, second) {
+  const values = [luminance(first), luminance(second)].sort((a, b) => b - a);
+  return (values[0] + 0.05) / (values[1] + 0.05);
+}
+
+for (const item of expected) {
+  const theme = JSON.parse(fs.readFileSync(item.path, 'utf8'));
+  assertExactKeys(theme, ['$schema', 'name', 'vars', 'colors', 'export'], item.path);
+  assertExactKeys(theme.colors, requiredColors, `${item.path}: colors`);
+  assertExactKeys(theme.export, ['pageBg', 'cardBg', 'infoBg'], `${item.path}: export`);
+  if (theme.name !== item.name || theme.name.includes('/')) throw new Error(`${item.path}: invalid name`);
+
+  for (const [name, value] of Object.entries(theme.vars)) {
+    if (!hex.test(value)) throw new Error(`${item.path}: ${name} is not a six-digit hex color`);
+  }
+
+  const resolve = (value) => {
+    if (typeof value === 'string' && hex.test(value)) return value;
+    if (typeof value === 'string' && value in theme.vars) return theme.vars[value];
+    throw new Error(`${item.path}: invalid color value ${String(value)}`);
+  };
+  const color = (role) => resolve(theme.colors[role]);
+  const background = (role) => color(role);
+  const exportColor = (role) => resolve(theme.export[role]);
+
+  if (exportColor('pageBg') !== item.surface) throw new Error(`${item.path}: wrong export surface`);
+  if (color('accent') !== item.accent) throw new Error(`${item.path}: wrong accent`);
+  if (color('toolDiffAdded') !== item.added) throw new Error(`${item.path}: wrong added color`);
+  if (color('toolDiffRemoved') !== item.removed) throw new Error(`${item.path}: wrong removed color`);
+
+  const mainTextRoles = [
+    'accent', 'success', 'error', 'warning', 'muted', 'dim', 'text', 'thinkingText',
+    'mdHeading', 'mdLink', 'mdLinkUrl', 'mdCode', 'mdCodeBlock', 'mdQuote',
+    'mdListBullet', 'toolDiffAdded', 'toolDiffRemoved', 'toolDiffContext',
+    'syntaxComment', 'syntaxKeyword', 'syntaxFunction', 'syntaxVariable',
+    'syntaxString', 'syntaxNumber', 'syntaxType', 'syntaxOperator',
+    'syntaxPunctuation', 'bashMode',
+  ];
+  for (const role of mainTextRoles) {
+    if (contrast(color(role), item.surface) < 4.5) {
+      throw new Error(`${item.path}: ${role} does not reach 4.5:1 against the terminal surface`);
+    }
+  }
+
+  const contextualText = [
+    ['accent', 'selectedBg'],
+    ['userMessageText', 'userMessageBg'],
+    ['customMessageText', 'customMessageBg'],
+    ['customMessageLabel', 'customMessageBg'],
+  ];
+  for (const [foregroundRole, backgroundRole] of contextualText) {
+    if (contrast(color(foregroundRole), background(backgroundRole)) < 4.5) {
+      throw new Error(`${item.path}: ${foregroundRole} does not reach 4.5:1 against ${backgroundRole}`);
+    }
+  }
+  for (const foregroundRole of ['toolTitle', 'toolOutput']) {
+    for (const backgroundRole of ['toolPendingBg', 'toolSuccessBg', 'toolErrorBg']) {
+      if (contrast(color(foregroundRole), background(backgroundRole)) < 4.5) {
+        throw new Error(`${item.path}: ${foregroundRole} does not reach 4.5:1 against ${backgroundRole}`);
+      }
+    }
+  }
+}
+NODE
+
+  if command -v pi >/dev/null 2>&1; then
+    pi_real=$(node -e 'console.log(require("fs").realpathSync(process.argv[1]))' "$(command -v pi)")
+    pi_theme_module="$(dirname -- "$pi_real")/modes/interactive/theme/theme.js"
+    [ -f "$pi_theme_module" ] || fail "could not locate Pi's installed theme loader"
+    node --input-type=module - "$pi_theme_module" "$PI_LIGHT_THEME_FILE" "$PI_THEME_FILE" <<'NODE'
+import { pathToFileURL } from 'node:url';
+
+const { loadThemeFromPath } = await import(pathToFileURL(process.argv[2]).href);
+for (const themePath of process.argv.slice(3)) {
+  const theme = loadThemeFromPath(themePath, 'truecolor');
+  if (!theme.name) throw new Error(`${themePath}: Pi loaded a nameless theme`);
+}
+NODE
+  fi
+
+  assert_contains "$README_FILE" '## Install into Pi'
+  assert_contains "$README_FILE" '"theme": "dreamlike-glade/dreamlike-canopy"'
+}
+
 exercise_install_and_rollback() {
   test_root=$(mktemp -d "${TMPDIR:-/tmp}/dreamlike-canopy-test.XXXXXX")
   trap 'rm -rf "$test_root"' EXIT HUP INT TERM
@@ -336,6 +576,8 @@ sh -n "$PACKAGE_DIR/scripts/rollback.sh"
 validate_starship
 validate_transient_zsh
 validate_ghostty_static
+validate_codex_themes
+validate_pi_themes
 exercise_install_and_rollback
 
 printf '%s\n' "All configuration and installer checks passed."

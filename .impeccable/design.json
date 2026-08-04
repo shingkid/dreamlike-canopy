@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-07-19T13:42:59Z",
-  "title": "Design System: Dreamlike Canopy Terminal System",
+  "generatedAt": "2026-07-22T07:36:50Z",
+  "title": "Design System: Dreamlike Canopy Developer Environment",
   "extensions": {
     "colorMeta": {
       "canopy-background": { "role": "neutral", "displayName": "Canopy Night", "canonical": "#07110F", "tonalRamp": ["#07110F", "#0B1715", "#17312E", "#24514D", "#3B6963", "#718A88", "#B1C4C0", "#ECF8F5"] },
@@ -49,15 +49,15 @@
   ],
   "narrative": {
     "northStar": "A forest observatory after dusk.",
-    "overview": "Dreamlike Canopy treats the terminal as a quiet instrument panel inside a living forest: dark mode is a deep blue-green canopy, while light mode opens into a misty glade. The paired palettes preserve the same ANSI semantics, so the shell prompt, Git state, runtimes, and command feedback remain familiar as macOS Appearance changes. The system is atmospheric but practical: translucency, blur, and luminous mint are reserved for the terminal surface and prompt affordances; command output remains high-contrast and readable.",
-    "keyCharacteristics": ["Deep forest teal in dark mode; an open green-tinted neutral in light mode.", "Shared ANSI semantics across automatic light/dark switching.", "Geist Mono at a stable 14px reading size.", "Full paths, explicit Git symbols, and a Powerline directory capsule."],
+    "overview": "Dreamlike Canopy treats the developer environment as a quiet instrument panel inside a living forest: dark mode is a deep blue-green canopy, while light mode opens into a misty glade. The paired palettes preserve the same semantics across Ghostty, Starship, Codex, and Pi, so shell state, diffs, skills, thinking levels, and command feedback remain familiar as appearance changes. The system is atmospheric but practical: translucency, blur, and luminous mint are reserved for surfaces and primary affordances; working content remains high-contrast and readable.",
+    "keyCharacteristics": ["Deep forest teal in dark mode; an open green-tinted neutral in light mode.", "Shared semantics across automatic light/dark switching.", "Matching Codex application chrome with semantic diff and skill colors.", "Complete Pi TUI coverage, including tools, syntax, thinking levels, bash mode, and exports.", "Geist Mono at a stable 14px reading size.", "Full paths, explicit Git symbols, and a Powerline directory capsule."],
     "rules": [
-      { "name": "The Shared Semantics Rule", "body": "A light/dark switch may change a color’s value, never its ANSI meaning.", "section": "colors" },
+      { "name": "The Shared Semantics Rule", "body": "A light/dark switch may change a color’s value, never its meaning across ANSI roles, Codex diffs and skills, or Pi TUI states.", "section": "colors" },
       { "name": "The Risk Signal Rule", "body": "Rose is reserved for conflict and deletion; sunlight marks modification and remote synchronization; green marks staged progress. Symbols remain visible so risk is never communicated by color alone.", "section": "colors" },
       { "name": "The Instrument Rule", "body": "Do not introduce display faces, proportional labels, or variable headline scales.", "section": "typography" },
       { "name": "The One-Surface Rule", "body": "Keep the terminal visually continuous. Use opacity, blur, selection, and the directory capsule for state; never add shadowed cards or decorative glass containers.", "section": "elevation" }
     ],
-    "dos": ["Do preserve the light:Dreamlike Glade,dark:Dreamlike Canopy pairing so the system follows macOS Appearance.", "Do use ANSI semantic roles so Starship adapts with Ghostty automatically.", "Do retain the 4.5 minimum-contrast guard and Glade’s deep teal ink.", "Do keep the full working path visible and truncate only the home directory to ~."],
-    "donts": ["Don't introduce a separate light-mode Starship configuration; semantic ANSI colors are the adaptive bridge.", "Don't use neon accents, gradient text, or saturated decoration that competes with command output.", "Don't add floating cards, wide shadows, or default glassmorphism layers to a one-surface terminal.", "Don't change an ANSI color’s meaning between Canopy and Glade."]
+    "dos": ["Do preserve the light:Dreamlike Glade,dark:Dreamlike Canopy pairing so the system follows macOS Appearance.", "Do import Glade into Codex's light slot and Canopy into its dark slot.", "Do select dreamlike-glade/dreamlike-canopy in Pi so TUI and terminal switch together.", "Do use semantic roles so Starship, Codex, and Pi adapt without changing meaning.", "Do retain the 4.5 minimum-contrast guard and Glade’s deep teal ink.", "Do keep the full working path visible and truncate only the home directory to ~."],
+    "donts": ["Don't introduce a separate light-mode Starship configuration; semantic ANSI colors are the adaptive bridge.", "Don't swap diff, skill, or state roles between light and dark mode.", "Don't leave Pi's HTML export surfaces implicit.", "Don't use neon accents, gradient text, or saturated decoration that competes with working content.", "Don't add floating cards, wide shadows, or default glassmorphism layers to a one-surface environment.", "Don't change a semantic color’s meaning between Canopy and Glade."]
   }
 }
